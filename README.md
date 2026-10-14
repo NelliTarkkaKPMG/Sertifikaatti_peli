@@ -1,23 +1,30 @@
-# ISO 27001 -haaste 🛡️
+# ISO 27001 -valmiustesti
 
-An expo game for company representatives visiting our stand. The goal is to show **why their company would need and/or want an ISO 27001 certificate** – and to give our experts a natural conversation starter.
+An expo tool for company representatives visiting our stand. It shows **why their company would benefit from ISO 27001 certification** and leads them to our related consulting services, ending in a personalised "recommended path" that our consultants use to start the conversation.
 
 Visitors scan a QR code and get:
 
 | Part | Content |
 |---|---|
-| 🧭 **Tarvitseeko yrityksesi ISO 27001:n?** | 7-question self-assessment about their company (customer demands, data, NIS2, suppliers, incidents, growth, current practices). No wrong answers. Result: a "need level" meter + the business reasons that apply to them. |
-| 🧠 Pikavisa | ISO 27001 basics (SoA, number of Annex A controls, themes…) |
-| 🔍 Auditoijan silmin | "Which clause fails most often?" (9.2) + auditor findings → pick the clause |
-| 🗂️ Lajittelupeli | Sort Annex A controls into the four themes |
-| ⚡ Tosi vai tarua? | Timed true/false |
+| **Tarvekartoitus** (needs assessment) | 7 questions about their company: customer demands, confidential data, NIS2, suppliers, incidents, growth plans, current practices. Result: business-need level and the business benefits that apply to them. |
+| ISO 27001:n perusteet | Basics: SoA, Annex A, themes, certification |
+| Auditoijan näkökulma | Auditor findings: which clause does it relate to (incl. 9.2) |
+| Liite A:n teemat | Sort Annex A controls into the four themes |
+| Pitääkö paikkansa? | Timed true/false on common beliefs |
 
-After each quiz, the topics the player got wrong are shown with a short "why this matters for your business / how we help" pitch.
+After each quiz, topics they got wrong are shown with a business explanation and the matching service ("Palvelumme: …").
 
-The **summary screen** (available after any game) shows the need level, the reasons ISO 27001 suits their company, the topics worth discussing, their strengths, and a "come talk to us – show this screen to our expert" box. That box has topic chips so staff know right away what to talk about.
+The **summary** shows business need, knowledge level, business benefits, a **numbered recommended path of our services** (e.g. Gap-analyysi → ISMS:n käyttöönotto → Riskienarviointi ja SoA → Sisäinen auditointi → Sertifiointivalmiuden arviointi), and a box asking them to show the screen to a consultant at the stand.
+
+Nothing is stored or sent anywhere; answers stay in the visitor's browser.
 
 ## Editing content
-Everything is in **`questions.js`**: `CONFIG` (stand name and texts), `SURVEY` + `REASONS` (self-assessment), `TOPICS` (quiz pitches) and `GAMES` (quiz questions). No build step.
+Everything is in **`questions.js`**:
+- `CONFIG` – stand name and texts
+- `SERVICES` – your consulting services (edit to match your offering)
+- `SURVEY` + `REASONS` – needs assessment and business benefits (each reason points to a service)
+- `TOPICS` – quiz topics, business explanations, linked service
+- `GAMES` – quiz questions
 
 ## Publishing (GitHub Pages)
 1. Repo → Settings → Pages → *Deploy from a branch* → choose the branch and `/ (root)`.

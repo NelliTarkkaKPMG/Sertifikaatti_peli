@@ -1,17 +1,14 @@
 (function () {
   "use strict";
 
-  const POINTS = 100;      // per oikea vastaus
-  const SPEED_BONUS = 50;  // max lisäpisteet ajastetuissa peleissä
-  const STORE_KEY = "iso27001-game-v2";
+  const STORE_KEY = "iso27001-game-v3";
 
   const app = document.getElementById("app");
   const homeBtn = document.getElementById("homeBtn");
-  const totalEl = document.getElementById("totalScore");
   document.getElementById("brand").textContent = CONFIG.brand;
   homeBtn.addEventListener("click", () => { stopTimer(); showHub(); });
 
-  const fresh = () => ({ name: "", results: {}, survey: null });
+  const fresh = () => ({ company: "", results: {}, survey: null });
   let state = load();
   let timerId = null;
 
@@ -25,33 +22,30 @@
 
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-  const total = () => Object.values(state.results).reduce((s, r) => s + r.score, 0);
-  const maxFor = (g) => g.questions.length * (POINTS + (g.timer ? SPEED_BONUS : 0));
   const anyDone = () => state.survey || Object.keys(state.results).length > 0;
   const byId = (id) => document.getElementById(id);
   const onClick = (id, fn) => { const el = byId(id); if (el) el.onclick = fn; };
+  const uniq = (a) => a.filter((x, i) => a.indexOf(x) === i);
 
   function render(html, { showHome = false } = {}) {
-    app.innerHTML = `<div class="pop">${html}</div>`;
+    app.innerHTML = `<div class="fade">${html}</div>`;
     homeBtn.hidden = !showHome;
-    const t = total();
-    totalEl.hidden = t === 0;
-    totalEl.textContent = `${t} p`;
     window.scrollTo(0, 0);
   }
 
   // --- Aloitus ---------------------------------------------------------------
   function showStart() {
     render(`
-      <div class="big-emoji">🛡️</div>
-      <h1>Mitä ISO 27001 voisi tehdä teidän yrityksellenne?</h1>
-      <p class="lead">Selvitä parissa minuutissa, tarvitseeko yrityksesi tietoturvasertifikaatin – ja testaa samalla, kuinka hyvin tunnet ISO 27001:n. 😎</p>
-      <label for="name" class="lead">Nimimerkki (vapaaehtoinen)</label>
-      <input id="name" type="text" maxlength="24" placeholder="esim. Kontrolli-Kaisa" value="${esc(state.name)}">
-      <button class="btn" id="go">Aloitetaan!</button>
+      <p class="eyebrow">ISO/IEC 27001:2022</p>
+      <h1>Onko yrityksenne valmis ISO 27001 -sertifiointiin?</h1>
+      <p class="lead">Selvittäkää muutamassa minuutissa, mitä hyötyä sertifikaatista olisi liiketoiminnallenne ja missä vaiheessa organisaationne on. Saatte lopuksi suositellun etenemispolun.</p>
+      <label for="company" class="label">Yrityksen nimi (vapaaehtoinen)</label>
+      <input id="company" type="text" maxlength="40" autocomplete="organization" value="${esc(state.company)}">
+      <button class="btn" id="go">Aloita</button>
+      <p class="note">Vastauksia ei tallenneta eikä lähetetä minnekään.</p>
     `);
     onClick("go", () => {
-      state.name = byId("name").value.trim();
+      state.company = byId("company").value.trim();
       save();
       showHub();
     });
@@ -59,41 +53,42 @@
 
   // --- Valikko ---------------------------------------------------------------
   function showHub() {
-    const surveyCard = `<button class="game-card featured" id="surveyCard">
-        ${state.survey ? `<span class="done">✓</span>` : `<span class="badge">Aloita tästä</span>`}
-        <div class="icon">${SURVEY.icon}</div>
-        <div class="title">${esc(SURVEY.title)}</div>
-        <div class="sub">${esc(SURVEY.subtitle)}</div>
-      </button>`;
+    const status = (done, text) => done ? `<span class="status done">${text}</span>` : "";
     const cards = GAMES.map((g) => {
       const r = state.results[g.id];
-      return `<button class="game-card" data-id="${g.id}">
-        ${r ? `<span class="done">${r.correct}/${g.questions.length}</span>` : ""}
-        <div class="icon">${g.icon}</div>
-        <div class="title">${esc(g.title)}</div>
-        <div class="sub">${esc(g.subtitle)}</div>
+      return `<button class="tile" data-id="${g.id}">
+        <span class="tag">${esc(g.tag)}</span>
+        <span class="tile-title">${esc(g.title)}</span>
+        <span class="tile-sub">${esc(g.subtitle)}</span>
+        ${status(r, r ? `${r.correct}/${g.questions.length} oikein` : "")}
       </button>`;
     }).join("");
     render(`
-      <h2>${state.name ? `Hei ${esc(state.name)}! ` : ""}Mistä aloitetaan?</h2>
-      ${surveyCard}
-      <h3 class="section">🎮 Testaa tietosi</h3>
+      ${state.company ? `<p class="eyebrow">${esc(state.company)}</p>` : ""}
+      <h2>Valitkaa osio</h2>
+      <button class="tile featured" id="surveyCard">
+        <span class="tag">${esc(SURVEY.tag)}</span>
+        <span class="tile-title">${esc(SURVEY.title)}</span>
+        <span class="tile-sub">${esc(SURVEY.subtitle)}</span>
+        ${state.survey ? status(true, "Tehty") : `<span class="status">Suosittelemme aloittamaan tästä</span>`}
+      </button>
+      <h3 class="section">Testatkaa ISO 27001 -osaamisenne</h3>
       <div class="grid">${cards}</div>
-      ${anyDone() ? `<button class="btn" id="final">📋 Katso yhteenveto</button>
-        <button class="btn secondary" id="reset">Aloita alusta</button>` : ""}
+      ${anyDone() ? `<button class="btn" id="final">Näytä yhteenveto ja suositukset</button>
+        <button class="btn ghost" id="reset">Aloita alusta</button>` : ""}
     `);
     onClick("surveyCard", () => showSurveyQuestion([], 0));
-    app.querySelectorAll(".game-card[data-id]").forEach((el) => el.onclick = () => startGame(GAMES.find((g) => g.id === el.dataset.id)));
+    app.querySelectorAll(".tile[data-id]").forEach((el) => el.onclick = () => startGame(GAMES.find((g) => g.id === el.dataset.id)));
     onClick("final", showFinal);
-    onClick("reset", () => { state = Object.assign(fresh(), { name: state.name }); save(); showHub(); });
+    onClick("reset", () => { state = fresh(); save(); showStart(); });
   }
 
   // --- Tarvekartoitus --------------------------------------------------------
   function showSurveyQuestion(answers, i) {
     const q = SURVEY.questions[i];
     render(`
-      <div class="qcard">
-        <div class="progress"><span>${SURVEY.icon} Tarvekartoitus</span><span>${i + 1}/${SURVEY.questions.length}</span></div>
+      <div class="panel">
+        <div class="progress"><span>Tarvekartoitus</span><span>${i + 1} / ${SURVEY.questions.length}</span></div>
         <div class="bar"><div style="width:${(i / SURVEY.questions.length) * 100}%"></div></div>
         <p class="question">${esc(q.q)}</p>
         <div class="options">
@@ -116,20 +111,16 @@
     state.survey = { score, reasons };
     save();
     const level = surveyLevel();
-    confetti();
     render(`
-      <div class="result">
-        <div class="big-emoji">${level.icon}</div>
-        <p class="lead">ISO 27001 -tarve yrityksellenne:</p>
-        <h1>${esc(level.title)}</h1>
+      <div class="panel">
+        <p class="eyebrow">Tarvekartoituksen tulos</p>
+        <h1 class="result-title">${esc(level.title)}</h1>
         ${meterHtml(score)}
-        <p class="lead">${esc(level.text)}</p>
+        <p>${esc(level.text)}</p>
       </div>
       ${reasonsHtml(4)}
-      <div class="result">
-        <button class="btn" id="hub">🎮 Testaa seuraavaksi tietosi</button>
-        <button class="btn secondary" id="final">📋 Yhteenveto</button>
-      </div>
+      <button class="btn" id="final">Näytä suositeltu etenemispolku</button>
+      <button class="btn ghost" id="hub">Testaa ISO 27001 -osaamisenne</button>
     `, { showHome: true });
     onClick("hub", showHub);
     onClick("final", showFinal);
@@ -141,21 +132,23 @@
 
   function meterHtml(score) {
     const max = SURVEY.questions.reduce((s, q) => s + Math.max(...q.options.map((o) => o.points)), 0);
-    return `<div class="meter"><div style="width:${Math.max(6, (score / max) * 100)}%"></div></div>`;
+    return `<div class="meter" role="img" aria-label="Tarve ${score} / ${max}">
+      <div style="width:${Math.max(4, (score / max) * 100)}%"></div></div>
+      <div class="meter-scale"><span>Vähäinen</span><span>Kohtalainen</span><span>Suuri</span></div>`;
   }
 
   function reasonsHtml(max) {
     const keys = state.survey ? state.survey.reasons.slice(0, max) : ["tenders", "data", "growth"];
-    return `<section class="suggestions">
-      <h2 class="s-title">💡 Miksi ISO 27001 ${state.survey ? "teille" : "kannattaa"}</h2>
-      ${keys.map((k) => card(REASONS[k].icon, REASONS[k].title, REASONS[k].text)).join("")}
+    return `<section class="block">
+      <h2>Liiketoimintahyödyt ${state.survey ? "teille" : ""}</h2>
+      ${keys.map((k) => `<div class="item"><h4>${esc(REASONS[k].title)}</h4><p>${esc(REASONS[k].text)}</p></div>`).join("")}
     </section>`;
   }
 
   // --- Tietovisat ------------------------------------------------------------
   function startGame(game) {
-    const run = { game, order: shuffle(game.questions), i: 0, score: 0, correct: 0, topics: {} };
-    // Auditoijan silmin: lämmittelykysymys pidetään aina ensimmäisenä
+    const run = { game, order: shuffle(game.questions), i: 0, correct: 0, topics: {} };
+    // Auditoijan näkökulma: johdantokysymys pidetään aina ensimmäisenä
     if (game.id === "auditor") run.order = [game.questions[0], ...shuffle(game.questions.slice(1))];
     showQuestion(run);
   }
@@ -170,8 +163,8 @@
     const two = shown.length === 2;
 
     render(`
-      <div class="qcard">
-        <div class="progress"><span>${game.icon} ${esc(game.title)}</span><span>${i + 1}/${order.length}</span></div>
+      <div class="panel">
+        <div class="progress"><span>${esc(game.title)}</span><span>${i + 1} / ${order.length}</span></div>
         <div class="bar"><div style="width:${(i / order.length) * 100}%"></div></div>
         ${game.timer ? `<div class="bar timer"><div id="tbar" style="width:100%"></div></div>` : ""}
         ${game.prompt ? `<p class="prompt">${esc(game.prompt)}</p>` : ""}
@@ -183,7 +176,6 @@
       </div>
     `, { showHome: true });
 
-    const started = Date.now();
     let answered = false;
     const answer = (idx) => {
       if (answered) return;
@@ -196,27 +188,18 @@
         t.asked++;
         if (!ok) t.missed++;
       }
-      let gained = 0;
-      if (ok) {
-        gained = POINTS;
-        if (game.timer) {
-          const left = Math.max(0, game.timer - (Date.now() - started) / 1000);
-          gained += Math.round(SPEED_BONUS * (left / game.timer));
-        }
-        run.score += gained;
-        run.correct++;
-      }
+      if (ok) run.correct++;
       app.querySelectorAll(".opt").forEach((b) => {
         b.disabled = true;
         const bi = Number(b.dataset.idx);
         if (bi === q.correct) b.classList.add("correct");
         else if (bi === idx) b.classList.add("wrong");
       });
-      const title = idx === null ? "⏰ Aika loppui!" : ok ? `✅ Oikein! +${gained} p` : "❌ Ei ihan";
+      const title = idx === null ? "Aika päättyi" : ok ? "Oikein" : "Väärin";
       const last = run.i === order.length - 1;
       byId("fb").innerHTML = `
         <div class="feedback ${ok ? "ok" : "bad"}"><strong>${title}</strong>${esc(q.explain || "")}</div>
-        <button class="btn" id="next">${last ? "Katso tulos" : "Seuraava →"}</button>`;
+        <button class="btn" id="next">${last ? "Näytä tulos" : "Seuraava"}</button>`;
       onClick("next", () => {
         if (last) finishGame(run);
         else { run.i++; showQuestion(run); }
@@ -240,90 +223,83 @@
 
   function finishGame(run) {
     const { game } = run;
-    const prev = state.results[game.id];
-    // Paras tulos jää voimaan, mutta ehdotukset perustuvat viimeisimpään pelikertaan
-    const best = !prev || run.score > prev.score ? run : prev;
-    state.results[game.id] = { score: best.score, correct: best.correct, topics: run.topics };
+    state.results[game.id] = { correct: run.correct, total: game.questions.length, topics: run.topics };
     save();
-    const ratio = run.correct / game.questions.length;
-    const stars = ratio >= 0.9 ? 3 : ratio >= 0.6 ? 2 : ratio > 0 ? 1 : 0;
-    const msg = ["Harjoitus tekee mestarin! 💪", "Hyvä alku! 👍", "Vahvaa osaamista! 🔥", "Auditoija olisi ylpeä! 🏅"][stars];
-    if (stars >= 2) confetti();
     const nextGame = GAMES.find((g) => !state.results[g.id]);
     render(`
-      <div class="result">
-        <div class="big-emoji">${game.icon}</div>
-        <h2>${esc(game.title)}</h2>
-        <div class="stars">${"⭐".repeat(stars)}${"☆".repeat(3 - stars)}</div>
-        <div class="score">${run.score} p</div>
-        <p class="lead">${run.correct}/${game.questions.length} oikein · ${msg}</p>
+      <div class="panel">
+        <p class="eyebrow">${esc(game.title)}</p>
+        <div class="score">${run.correct} <span>/ ${game.questions.length}</span></div>
+        <p>${esc(knowledgeLevel(run.correct / game.questions.length).text)}</p>
       </div>
       ${topicsHtml(run.topics, 2)}
-      <div class="result">
-        ${!state.survey ? `<button class="btn" id="survey">${SURVEY.icon} Tarvitseeko yrityksesi ISO 27001:n?</button>` : ""}
-        ${nextGame ? `<button class="btn ${state.survey ? "" : "secondary"}" id="next">Seuraava peli: ${nextGame.icon} ${esc(nextGame.title)}</button>` : ""}
-        <button class="btn secondary" id="final">📋 Yhteenveto</button>
-        <button class="btn secondary" id="again">Pelaa uudestaan</button>
-      </div>
+      ${!state.survey ? `<button class="btn" id="survey">${esc(SURVEY.title)}</button>` : ""}
+      <button class="btn ${state.survey ? "" : "ghost"}" id="final">Näytä yhteenveto ja suositukset</button>
+      ${nextGame ? `<button class="btn ghost" id="next">Seuraava osio: ${esc(nextGame.title)}</button>` : ""}
     `, { showHome: true });
     onClick("survey", () => showSurveyQuestion([], 0));
     onClick("next", () => startGame(nextGame));
     onClick("final", showFinal);
-    onClick("again", () => startGame(game));
+  }
+
+  function knowledgeLevel(pct) {
+    if (pct >= 0.85) return { title: "Vahva osaaminen", text: "Organisaatiollanne on hyvät valmiudet. Sertifikaatti tekisi osaamisesta todennettavaa myös asiakkaille." };
+    if (pct >= 0.6) return { title: "Hyvä perusta", text: "Perusteet ovat hallussa. Gap-analyysi osoittaa, mitä sertifiointiin vielä tarvitaan." };
+    return { title: "Kehityskohteita", text: "Tämä on tyypillinen lähtötilanne. Jäsennelty käyttöönotto vie sertifiointiin hallitusti ja ennustettavasti." };
   }
 
   // --- Yhteenveto ------------------------------------------------------------
   function showFinal() {
-    const played = GAMES.filter((g) => state.results[g.id]);
-    const t = total();
-    let head;
-    if (played.length) {
-      const pct = t / played.reduce((s, g) => s + maxFor(g), 0);
-      const level =
-        pct >= 0.85 ? { e: "🏆", t: "Tietoturvamestari", d: "Osaaminen on vahvaa – sertifikaatti tekisi siitä näkyvää myös asiakkaillenne." } :
-        pct >= 0.6 ? { e: "🥈", t: "Hyvällä pohjalla", d: "Perusteet ovat hallussa. Pienellä tuella sertifiointi on lähempänä kuin luulet." } :
-        pct >= 0.35 ? { e: "🛠️", t: "Hyvällä matkalla", d: "Tärkeimmät asiat ovat tuttuja – loput opitaan matkan varrella." } :
-        { e: "🌱", t: "Gap-analyysin paikka", d: "Hyvä uutinen: jokainen sertifioitu yritys on aloittanut jostain!" };
-      head = `<div class="big-emoji">${level.e}</div><h1>${esc(level.t)}</h1>
-        ${state.name ? `<p class="lead">${esc(state.name)}</p>` : ""}
-        <div class="score">${t} p</div><p class="lead">${level.d}</p>`;
-    } else {
-      head = `<div class="big-emoji">📋</div><h1>Yhteenveto</h1>${state.name ? `<p class="lead">${esc(state.name)}</p>` : ""}`;
-    }
-    if (state.survey) {
-      const sl = surveyLevel();
-      head += `<div class="need"><span>ISO 27001 -tarve:</span> <strong>${sl.icon} ${esc(sl.title)}</strong>${meterHtml(state.survey.score)}</div>`;
-    }
-
+    const results = Object.values(state.results);
     const topics = mergeTopics();
-    confetti();
+    const summary = [];
+    if (state.survey) {
+      summary.push(`<div class="stat"><span class="stat-label">Liiketoimintatarve</span><strong>${esc(surveyLevel().title)}</strong></div>`);
+    }
+    if (results.length) {
+      const correct = results.reduce((s, r) => s + r.correct, 0);
+      const totalQ = results.reduce((s, r) => s + r.total, 0);
+      summary.push(`<div class="stat"><span class="stat-label">ISO 27001 -osaaminen</span><strong>${esc(knowledgeLevel(correct / totalQ).title)}</strong><span class="stat-sub">${correct}/${totalQ} oikein</span></div>`);
+    }
+    const path = recommendedPath(topics);
     render(`
-      <div class="result">${head}</div>
+      <p class="eyebrow">Yhteenveto${state.company ? ` · ${esc(state.company)}` : ""}</p>
+      <h1>Teidän polkunne ISO 27001 -sertifikaattiin</h1>
+      ${summary.length ? `<div class="stats">${summary.join("")}</div>` : ""}
+      ${!state.survey ? `<button class="btn" id="survey">Tehkää tarvekartoitus tarkempaa suositusta varten</button>` : ""}
       ${reasonsHtml(3)}
-      ${!state.survey ? `<button class="btn" id="survey">${SURVEY.icon} Selvitä, tarvitseeko yrityksesi ISO 27001:n</button>` : ""}
-      ${played.length ? topicsHtml(topics, 2, true) : ""}
+      <section class="block">
+        <h2>Suositeltu etenemispolku</h2>
+        <ol class="path">
+          ${path.map((k) => `<li><h4>${esc(SERVICES[k].name)}</h4><p>${esc(SERVICES[k].text)}</p></li>`).join("")}
+        </ol>
+      </section>
       <div class="talkbox">
-        <strong>${esc(CONFIG.talkTitle)}</strong>
+        <h2>${esc(CONFIG.talkTitle)}</h2>
         <p>${esc(CONFIG.talkText)}</p>
-        <div class="chips">${talkChips(topics).map((c) => `<span class="chip">${c.icon} ${esc(c.title)}</span>`).join("")}</div>
+        <div class="chips">${path.slice(0, 3).map((k) => `<span class="chip">${esc(SERVICES[k].name)}</span>`).join("")}</div>
+        <p class="note">Tavattavissa ${esc(CONFIG.stand)}.</p>
       </div>
-      <div class="result">
-        ${GAMES.some((g) => !state.results[g.id]) ? `<button class="btn secondary" id="hub">🎮 Pelaa lisää</button>` : `<button class="btn secondary" id="hub">Takaisin valikkoon</button>`}
-      </div>
+      ${GAMES.some((g) => !state.results[g.id]) ? `<button class="btn ghost" id="hub">Jatka testejä</button>` : `<button class="btn ghost" id="hub">Takaisin valikkoon</button>`}
     `, { showHome: true });
     onClick("survey", () => showSurveyQuestion([], 0));
     onClick("hub", showHub);
   }
 
-  // Keskustelun aiheet asiantuntijalle: tärkeimmät syyt + heikoimmat aiheet
-  function talkChips(topics) {
-    const reasons = (state.survey ? state.survey.reasons.slice(0, 2) : []).map((k) => REASONS[k]);
-    const weak = weakTopics(topics, 2).map((k) => TOPICS[k]);
-    const chips = reasons.concat(weak);
-    return chips.length ? chips : [TOPICS.certification, TOPICS.risk];
+  // Etenemispolku: lähtötilanteen mukainen runko + vastausten perusteella nousseet palvelut
+  function recommendedPath(topics) {
+    const ready = state.survey && state.survey.reasons.includes("ready");
+    const extra = [];
+    if (state.survey) state.survey.reasons.slice(0, 3).forEach((k) => extra.push(REASONS[k].service));
+    weakTopics(topics, 3).forEach((k) => extra.push(TOPICS[k].service));
+    const start = ready ? ["gap"] : ["gap", "implementation"];
+    const middle = uniq(["risk"].concat(extra)).filter((k) => !start.includes(k) && !["readiness", "internal_audit", "continuous"].includes(k));
+    const end = ["internal_audit", "readiness"];
+    if (extra.includes("continuous")) end.push("continuous");
+    return uniq(start.concat(middle.slice(0, 2), end)).slice(0, 6);
   }
 
-  // --- Ehdotukset vastausten perusteella -------------------------------------
+  // --- Aiheet vastausten perusteella -----------------------------------------
   function mergeTopics() {
     const all = {};
     Object.values(state.results).forEach((r) => Object.entries(r.topics || {}).forEach(([k, v]) => {
@@ -341,42 +317,18 @@
       .slice(0, max).map(([k]) => k);
   }
 
-  function card(icon, title, text) {
-    return `<div class="suggestion">
-        <div class="s-head"><span class="s-icon">${icon}</span><strong>${esc(title)}</strong></div>
-        <p>${esc(text)}</p>
-      </div>`;
-  }
-
-  function topicsHtml(topics, max, isFinal) {
+  function topicsHtml(topics, max) {
     const weak = weakTopics(topics, max);
-    const strong = Object.entries(topics).filter(([k, v]) => TOPICS[k] && v.missed === 0).map(([k]) => TOPICS[k]);
-    let html = `<h2 class="s-title">${isFinal ? "🎯 Tästä kannattaa jutella" : "💡 Miksi tällä on väliä"}</h2>`;
-    html += weak.length
-      ? weak.map((k) => card(TOPICS[k].icon, TOPICS[k].title, TOPICS[k].pitch)).join("")
-      : card(PERFECT_PITCH.icon, PERFECT_PITCH.title, PERFECT_PITCH.pitch);
-    html += `<p class="s-link">💬 Kysy lisää ${esc(CONFIG.stand)}</p>`;
-    if (isFinal && strong.length) {
-      html += `<div class="strengths"><strong>💪 Vahvuutesi</strong><ul>${strong.map((t) => `<li>${esc(t.strong)}</li>`).join("")}</ul></div>`;
-    }
-    return `<section class="suggestions">${html}</section>`;
+    const items = weak.length
+      ? weak.map((k) => {
+          const t = TOPICS[k], s = SERVICES[t.service];
+          return `<div class="item"><h4>${esc(t.title)}</h4><p>${esc(t.pitch)}</p>
+            <p class="service"><span>Palvelumme</span> ${esc(s.name)}</p></div>`;
+        }).join("")
+      : `<div class="item"><h4>Osaaminen on vahvaa</h4><p>Sertifikaatti tekee osaamisestanne todennettavaa asiakkaille. Valmiusarviointi osoittaa, kuinka lähellä sertifiointia olette.</p>
+          <p class="service"><span>Palvelumme</span> ${esc(SERVICES.readiness.name)}</p></div>`;
+    return `<section class="block"><h2>Mitä tämä tarkoittaa liiketoiminnallenne</h2>${items}</section>`;
   }
 
-  // --- Konfetti --------------------------------------------------------------
-  function confetti() {
-    const box = byId("confetti");
-    const colors = ["#00b8d9", "#7c3aed", "#facc15", "#22c55e", "#f472b6"];
-    for (let i = 0; i < 80; i++) {
-      const c = document.createElement("div");
-      c.className = "confetto";
-      c.style.left = Math.random() * 100 + "vw";
-      c.style.background = colors[i % colors.length];
-      c.style.animationDuration = 1.8 + Math.random() * 1.8 + "s";
-      c.style.animationDelay = Math.random() * 0.4 + "s";
-      box.appendChild(c);
-      setTimeout(() => c.remove(), 4500);
-    }
-  }
-
-  if (state.name || anyDone()) showHub(); else showStart();
+  if (state.company || anyDone()) showHub(); else showStart();
 })();
