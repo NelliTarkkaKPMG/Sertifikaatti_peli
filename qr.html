@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pelin QR-koodi</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; text-align: center; padding: 32px 16px; color: #0b1f4d; background: #fff; }
+    h1 { font-size: 40px; margin: 0 0 8px; }
+    p { font-size: 20px; margin: 0 0 24px; }
+    #qr { display: inline-block; padding: 16px; border: 6px solid #0b1f4d; border-radius: 16px; }
+    #url { margin-top: 16px; font-size: 14px; color: #64748b; word-break: break-all; }
+    input { width: 100%; max-width: 480px; padding: 10px; font-size: 15px; margin-top: 24px; }
+    @media print { input, .hint { display: none; } }
+  </style>
+</head>
+<body>
+  <h1>🛡️ ISO 27001 -haaste</h1>
+  <p>Skannaa ja testaa tietosi – kestää 3 minuuttia!</p>
+  <div id="qr"></div>
+  <div id="url"></div>
+  <input id="custom" type="text" placeholder="Muuta osoitetta tarvittaessa ja paina Enter">
+  <p class="hint" style="font-size:14px;margin-top:8px">Tulosta sivu (Ctrl/Cmd + P) julisteeksi tai roll-upiin.</p>
+  <script>
+    const base = location.href.replace(/qr\.html.*$/, "");
+    const draw = (url) => {
+      document.getElementById("qr").innerHTML = "";
+      new QRCode(document.getElementById("qr"), { text: url, width: 320, height: 320, correctLevel: QRCode.CorrectLevel.M });
+      document.getElementById("url").textContent = url;
+    };
+    const input = document.getElementById("custom");
+    input.value = base;
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") draw(input.value.trim()); });
+    draw(base);
+  </script>
+</body>
+</html>
