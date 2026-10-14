@@ -80,7 +80,7 @@
 
   // --- Peli ------------------------------------------------------------------
   function startGame(game) {
-    const run = { game, order: shuffle(game.questions), i: 0, score: 0, correct: 0 };
+    const run = { game, order: shuffle(game.questions), i: 0, score: 0, correct: 0, topics: {} };
     // Auditoijan silmin: lämmittelykysymys pidetään aina ensimmäisenä
     if (game.id === "auditor") run.order = [game.questions[0], ...shuffle(game.questions.slice(1))];
     showQuestion(run);
@@ -116,6 +116,12 @@
       answered = true;
       stopTimer();
       const ok = idx === q.correct;
+      const topic = q.topic || game.topic;
+      if (topic) {
+        const t = run.topics[topic] || (run.topics[topic] = { asked: 0, missed: 0 });
+        t.asked++;
+        if (!ok) t.missed++;
+      }
       let gained = 0;
       if (ok) {
         gained = POINTS;
@@ -161,7 +167,9 @@
   function finishGame(run) {
     const { game } = run;
     const prev = state.results[game.id];
-    if (!prev || run.score > prev.score) state.results[game.id] = { score: run.score, correct: run.correct };
+    // Paras tulos jää voimaan, mutta ehdotukset perustuvat viimeisimpään pelikertaan
+    const best = !prev || run.score > prev.score ? run : prev;
+    state.results[game.id] = { score: best.score, correct: best.correct, topics: run.topics };
     save();
     const ratio = run.correct / game.questions.length;
     const stars = ratio >= 0.9 ? 3 : ratio >= 0.6 ? 2 : ratio > 0 ? 1 : 0;
@@ -174,6 +182,9 @@
         <div class="stars">${"⭐".repeat(stars)}${"☆".repeat(3 - stars)}</div>
         <div class="score">${run.score} p</div>
         <p class="lead">${run.correct}/${game.questions.length} oikein · ${msg}</p>
+      </div>
+      ${suggestionsHtml(run.topics, 2)}
+      <div class="result">
         ${allDone() ? `<button class="btn" id="final">🏆 Katso lopputulos</button>` : `<button class="btn" id="hub">Seuraava peli →</button>`}
         <button class="btn secondary" id="again">Pelaa uudestaan</button>
       </div>
@@ -201,6 +212,9 @@
         ${state.name ? `<p class="lead">${esc(state.name)}</p>` : ""}
         <div class="score">${t} p</div>
         <p class="lead">${level.d}</p>
+      </div>
+      ${suggestionsHtml(mergeTopics(), 3, true)}
+      <div class="result">
         <div class="prize">${esc(CONFIG.prizeText)}<br><small>${new Date().toLocaleString("fi-FI")}</small></div>
         <p class="lead" style="margin-top:20px">${esc(CONFIG.ctaText)}</p>
         <a class="btn" href="${esc(CONFIG.ctaLink)}">${esc(CONFIG.ctaButton)}</a>
@@ -217,6 +231,49 @@
         else { await navigator.clipboard.writeText(`${text} ${url}`); alert("Linkki kopioitu!"); }
       } catch (e) { /* peruttu */ }
     };
+  }
+
+  // --- Ehdotukset vastausten perusteella ---------------------------------------
+  function mergeTopics() {
+    const all = {};
+    Object.values(state.results).forEach((r) => Object.entries(r.topics || {}).forEach(([k, v]) => {
+      const t = all[k] || (all[k] = { asked: 0, missed: 0 });
+      t.asked += v.asked;
+      t.missed += v.missed;
+    }));
+    return all;
+  }
+
+  function topicLink(title) {
+    return `mailto:${CONFIG.contactEmail}?subject=${encodeURIComponent("ISO 27001: " + title)}`;
+  }
+
+  function suggestionsHtml(topics, max, isFinal) {
+    const entries = Object.entries(topics).filter(([k]) => TOPICS[k]);
+    // Eniten virheitä (suhteessa kysymyksiin) ensin
+    const weak = entries.filter(([, v]) => v.missed > 0)
+      .sort((a, b) => b[1].missed / b[1].asked - a[1].missed / a[1].asked || b[1].missed - a[1].missed)
+      .slice(0, max);
+    const strong = entries.filter(([, v]) => v.missed === 0 && v.asked > 0).map(([k]) => TOPICS[k]);
+
+    const card = (t, link) => `
+      <div class="suggestion">
+        <div class="s-head"><span class="s-icon">${t.icon}</span><strong>${esc(t.title)}</strong></div>
+        <p>${esc(t.pitch)}</p>
+        <a class="s-link" href="${esc(link)}">Kysy tästä →</a>
+      </div>`;
+
+    let html = `<h2 class="s-title">${isFinal ? "📋 Teidän tietoturvan terveystarkastus" : "💡 Vastaustesi perusteella"}</h2>`;
+    if (weak.length) {
+      html += `<p class="lead">${isFinal ? "Näihin aiheisiin kannattaisi tarttua ensimmäisenä:" : "Tässä aiheessa voisimme auttaa:"}</p>`;
+      html += weak.map(([k]) => card(TOPICS[k], topicLink(TOPICS[k].title))).join("");
+    } else {
+      html += card(PERFECT_PITCH, topicLink("Sisäinen auditointi / valmiusarviointi"));
+    }
+    if (isFinal && strong.length) {
+      html += `<div class="strengths"><strong>💪 Vahvuutesi</strong><ul>${strong.map((t) => `<li>${esc(t.strong)}</li>`).join("")}</ul></div>`;
+    }
+    return `<section class="suggestions">${html}</section>`;
   }
 
   // --- Konfetti --------------------------------------------------------------

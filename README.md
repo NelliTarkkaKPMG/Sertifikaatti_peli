@@ -11,8 +11,11 @@ A mobile marketing game about ISO 27001:2022. A player scans a QR code, enters a
 
 The final screen shows a level, total score, a "show this at our stand for a prize" box and a contact CTA.
 
+## Suggestions ("why talk to us")
+Every question has a `topic` (e.g. `internal_audit`, `risk`, `awareness`). After each game the player sees up to 2 suggestion cards for the topics they got wrong, and the final screen shows a "health check" with the top 3 weak topics plus their strengths. Each card's "Kysy tästä" button opens an email with the topic in the subject line, so you know what the lead is interested in. If everything was correct, a pitch for internal audit / pre-audit is shown.
+
 ## Editing content
-All questions, texts and the contact link are in **`questions.js`** (`CONFIG` and `GAMES`). No build step.
+All questions, texts, topic pitches (`TOPICS`) and the contact email are in **`questions.js`**. No build step.
 
 ## Publishing (GitHub Pages)
 1. Repo → Settings → Pages → *Deploy from a branch* → choose the branch and `/ (root)`.
