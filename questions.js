@@ -3,64 +3,186 @@
 
 const CONFIG = {
   brand: "ISO 27001 -haaste",
-  // Messuosaston nimi/numero, näytetään ehdotuskorteissa ja loppuruudussa (esim. "osastolla B12").
+  // Messuosaston nimi/numero, esim. "osastolla B12"
   stand: "osastollamme",
-  // Loppuruudun palkintolaatikko
-  prizeText: "Näytä tämä ruutu osastollamme ja nappaa palkinto! 🎁",
-  // Palkintolaatikossa näytettävä otsikko aiheille, joista kannattaa jutella (henkilökunnalle keskustelun avaukseksi)
-  talkTitle: "Juttele asiantuntijamme kanssa näistä:",
+  // Loppuruudun keskustelulaatikko – näytetään asiantuntijalle osastolla
+  talkTitle: "Tule juttelemaan osastollamme! 👋",
+  talkText: "Näytä tämä ruutu asiantuntijallemme – kerromme, mitä ISO 27001 tarkoittaisi juuri teidän yrityksellenne.",
 };
 
-// Aihealueet, joihin kysymykset liittyvät (kysymyksen kenttä "topic").
-// Kun pelaaja vastaa väärin, pelin lopussa näytetään aiheen "pitch" – eli miksi kannattaa jutella kanssamme.
+// ---------------------------------------------------------------------------
+// TARVEKARTOITUS: "Tarvitseeko yrityksesi ISO 27001:n?"
+// Ei oikeita vastauksia. Jokainen vaihtoehto antaa pisteitä (0–2) ja voi nostaa
+// esiin syyn (REASONS), miksi sertifikaatista olisi yritykselle hyötyä.
+// ---------------------------------------------------------------------------
+const SURVEY = {
+  id: "needs",
+  icon: "🧭",
+  title: "Tarvitseeko yrityksesi ISO 27001:n?",
+  subtitle: "7 nopeaa kysymystä – ei vääriä vastauksia",
+  questions: [
+    {
+      q: "Kysyvätkö asiakkaat tai tarjouspyynnöt näyttöä tietoturvastanne?",
+      options: [
+        { label: "Usein", points: 2, reason: "tenders" },
+        { label: "Joskus", points: 1, reason: "tenders" },
+        { label: "Ei koskaan", points: 0 },
+      ],
+    },
+    {
+      q: "Käsittelettekö asiakkaiden tai henkilöiden luottamuksellisia tietoja?",
+      options: [
+        { label: "Paljon", points: 2, reason: "data" },
+        { label: "Jonkin verran", points: 1, reason: "data" },
+        { label: "Tuskin lainkaan", points: 0 },
+      ],
+    },
+    {
+      q: "Koskeeko NIS2 (Suomessa kyberturvallisuuslaki) teitä tai asiakkaitanne?",
+      options: [
+        { label: "Kyllä", points: 2, reason: "nis2" },
+        { label: "En tiedä", points: 1, reason: "nis2" },
+        { label: "Ei koske", points: 0 },
+      ],
+    },
+    {
+      q: "Kuinka paljon toimintanne nojaa pilvipalveluihin ja alihankkijoihin?",
+      options: [
+        { label: "Lähes täysin", points: 2, reason: "suppliers" },
+        { label: "Osittain", points: 1, reason: "suppliers" },
+        { label: "Vähän", points: 0 },
+      ],
+    },
+    {
+      q: "Onko teillä ollut tietoturvapoikkeamia tai läheltä piti -tilanteita?",
+      options: [
+        { label: "Kyllä", points: 2, reason: "incident" },
+        { label: "Emme tiedä", points: 2, reason: "incident" },
+        { label: "Ei", points: 0 },
+      ],
+    },
+    {
+      q: "Tavoitteletteko kasvua, isompia asiakkaita tai uusia markkinoita?",
+      options: [
+        { label: "Kyllä", points: 2, reason: "growth" },
+        { label: "Ehkä", points: 1, reason: "growth" },
+        { label: "Ei juuri nyt", points: 0 },
+      ],
+    },
+    {
+      q: "Onko tietoturvan vastuut ja käytännöt sovittu ja dokumentoitu?",
+      options: [
+        { label: "Ei oikeastaan", points: 2, reason: "structure" },
+        { label: "Osittain", points: 1, reason: "structure" },
+        { label: "Kyllä, kattavasti", points: 0, reason: "ready" },
+      ],
+    },
+  ],
+  // Tulostasot pisteiden mukaan (max 14). Ensimmäinen, jonka min täyttyy, valitaan.
+  levels: [
+    { min: 9, icon: "🔥", title: "Vahva tarve", text: "ISO 27001 -sertifikaatista olisi teille selvää liiketoimintahyötyä – ja todennäköisesti asiakkaanne odottavat sitä pian." },
+    { min: 5, icon: "📈", title: "Selkeä hyöty", text: "Sertifikaatti vahvistaisi asemaanne ja helpottaisi asiakkaiden tietoturvakysymyksiin vastaamista." },
+    { min: 0, icon: "🌱", title: "Kilpailuetu tulevaisuuteen", text: "Akuuttia tarvetta ei ehkä vielä ole, mutta vaatimukset kiristyvät – ajoissa aloittaminen on edullisinta." },
+  ],
+};
+
+// Syyt, miksi sertifikaatista on hyötyä. Näytetään tarvekartoituksen tuloksissa.
+const REASONS = {
+  tenders: {
+    icon: "💼",
+    title: "Voitatte useampia tarjouskilpailuja",
+    text: "Yhä useampi asiakas ja julkinen hankinta edellyttää näyttöä tietoturvasta. Sertifikaatti vastaa kysymykseen kerralla – ilman loputtomia tietoturvakyselylomakkeita.",
+  },
+  data: {
+    icon: "🔐",
+    title: "Asiakkaiden luottamus",
+    text: "Kun käsittelette muiden tietoja, sertifikaatti osoittaa riippumattomasti, että ne ovat turvassa. Se tukee myös tietosuojavaatimusten täyttämistä.",
+  },
+  nis2: {
+    icon: "⚖️",
+    title: "NIS2 ja kyberturvallisuuslaki",
+    text: "ISO 27001 ei ole lain vaatima, mutta se on tunnetuin tapa rakentaa ja osoittaa lain edellyttämä riskienhallinta. NIS2-yritykset vaativat sitä yhä useammin myös toimittajiltaan.",
+  },
+  suppliers: {
+    icon: "🔗",
+    title: "Toimitusketju hallintaan",
+    text: "Standardi sisältää kontrollit toimittajasuhteille ja pilvipalveluille – tiedätte, kenen käsissä tietonne ovat ja mitä heiltä vaaditaan.",
+  },
+  incident: {
+    icon: "🚨",
+    title: "Vähemmän yllätyksiä",
+    text: "Systemaattinen riskienhallinta ja poikkeamien käsittely tarkoittavat, että ongelmat havaitaan ajoissa ja niistä toivutaan nopeammin.",
+  },
+  growth: {
+    icon: "🚀",
+    title: "Kilpailuetu kasvuun",
+    text: "Kansainvälisesti tunnettu sertifikaatti avaa ovia isompiin asiakkuuksiin ja uusille markkinoille.",
+  },
+  structure: {
+    icon: "🧱",
+    title: "Selkeät vastuut ja käytännöt",
+    text: "Hallintajärjestelmä tekee tietoturvasta johdettua toimintaa, joka ei ole yksittäisten henkilöiden muistin varassa.",
+  },
+  ready: {
+    icon: "🏁",
+    title: "Olette jo puolimatkassa",
+    text: "Kun käytännöt on dokumentoitu, sertifiointi on usein lyhyempi askel kuin luulisi. Valmiusarvio näyttää, mitä vielä puuttuu.",
+  },
+};
+
+// ---------------------------------------------------------------------------
+// TIETOVISAT
+// Jokainen kysymys liittyy aiheeseen (kenttä "topic"). Väärin menneiden aiheiden
+// "pitch" näytetään pelin lopussa: miksi aiheella on väliä yritykselle ja miten autamme.
 // Jos aiheen kaikki kysymykset menivät oikein, näytetään "strong"-teksti vahvuutena.
+// ---------------------------------------------------------------------------
 const TOPICS = {
   internal_audit: {
     icon: "🔍",
     title: "Sisäinen auditointi",
-    pitch: "Sisäinen auditointi (9.2) on yksi yleisimmistä poikkeamien lähteistä. Voimme toteuttaa sisäisen auditoinnin puolestanne riippumattomasti – tai kouluttaa omat auditoijanne.",
-    strong: "Sisäisen auditoinnin vaatimukset ovat hallussa.",
+    pitch: "Sertifioitu organisaatio tarkastaa toimintansa itse säännöllisesti – puutteet löytyvät ennen kuin asiakas tai hyökkääjä löytää ne. Autamme rakentamaan auditointikäytännön tai teemme auditoinnin puolestanne.",
+    strong: "Sisäisen auditoinnin merkitys on hallussa.",
   },
   risk: {
     icon: "⚖️",
     title: "Riskienhallinta ja SoA",
-    pitch: "Riskiarvio ja soveltamislausunto ovat ISMS:n sydän – ja auditoijan ensimmäinen tarkastuskohde. Fasilitoimme riskityöpajan ja katselmoimme SoA:nne ennen auditointia.",
-    strong: "Riskiperusteinen ajattelu ja SoA ovat tuttuja.",
+    pitch: "ISO 27001 ei vaadi kaikkea – vaan oikeat asiat teidän riskienne perusteella. Siksi se sopii myös pienemmille yrityksille. Riskityöpajassa selviää nopeasti, mitkä asiat ovat teille olennaisia.",
+    strong: "Riskiperusteinen ajattelu on tuttua.",
   },
   controls: {
     icon: "🗂️",
     title: "Liite A:n kontrollit",
-    pitch: "2022-versio toi 93 kontrollia, neljä teemaa ja 11 uutta kontrollia. Gap-analyysimme näyttää nopeasti, missä te olette ja mitä puuttuu.",
+    pitch: "93 kontrollia kattavat kaiken etätyöstä pilvipalveluihin ja turvalliseen ohjelmointiin. Gap-analyysimme näyttää, kuinka lähellä sertifiointivalmiutta olette jo nyt.",
     strong: "Liite A:n rakenne ja kontrollit ovat hyvin hallussa.",
   },
   management: {
     icon: "👔",
-    title: "Johdon sitoutuminen",
-    pitch: "Ilman johdon sitoutumista ISMS jää paperiksi. Autamme rakentamaan johdon katselmuksen, joka on oikeasti hyödyllinen – ja täyttää lausekkeen 9.3.",
-    strong: "Johdon rooli ISMS:ssä on selvä.",
+    title: "Johdon rooli",
+    pitch: "ISO 27001 tekee tietoturvasta johdon työkalun eikä pelkkää IT:n asiaa – ja juuri sitä myös NIS2 edellyttää johdolta. Autamme johtoa ottamaan roolin haltuun.",
+    strong: "Johdon rooli tietoturvassa on selvä.",
   },
   awareness: {
     icon: "🎓",
     title: "Henkilöstön tietoisuus",
-    pitch: "Ihmiset ovat paras puolustuslinja – kun he tietävät mitä tehdä. Rakennamme tietoturvakoulutusohjelman, josta jää myös näyttöä auditoijalle.",
-    strong: "Pätevyys- ja tietoisuusvaatimukset ovat tuttuja.",
+    pitch: "Suuri osa tietoturvapoikkeamista alkaa inhimillisestä virheestä. ISO 27001 vaatii henkilöstön koulutusta ja tietoisuutta – ja me autamme rakentamaan ohjelman, joka oikeasti toimii.",
+    strong: "Henkilöstön merkitys tietoturvassa on tuttu.",
   },
   improvement: {
     icon: "📈",
     title: "Mittarit ja jatkuva parantaminen",
-    pitch: "Tavoitteet, mittarit ja korjaavat toimenpiteet erottavat elävän ISMS:n mapissa pölyttyvästä. Autamme rakentamaan mittariston ja poikkeamaprosessin, jotka toimivat arjessa.",
+    pitch: "Sertifikaatti ei ole kertaluonteinen projekti vaan tapa parantaa toimintaa vuosi vuodelta – mitattavasti. Autamme rakentamaan mittarit, jotka kertovat johdolle oikeasti jotain.",
     strong: "Jatkuvan parantamisen periaatteet ovat hallussa.",
   },
   certification: {
     icon: "🏅",
     title: "Sertifiointiprosessi",
-    pitch: "Sertifiointi on selkeä prosessi, kun tietää mitä odottaa. Laadimme teille tiekartan ja teemme valmiusarvioinnin (pre-audit), jotta varsinainen auditointi ei yllätä.",
+    pitch: "Sertifiointi on selkeä prosessi, kun tietää mitä odottaa. Laadimme teille tiekartan nykytilasta sertifikaattiin – ja kerromme, kauanko se realistisesti kestää.",
     strong: "Sertifiointiprosessi on tuttu.",
   },
   basics: {
     icon: "🧱",
     title: "ISMS:n perusteet",
-    pitch: "Kaikki alkaa vahvasta perustasta. Autamme rakentamaan hallintajärjestelmän, joka sopii juuri teidän organisaatioonne – ei turhaa byrokratiaa.",
+    pitch: "Tietoturvan hallintajärjestelmä kuulostaa raskaalta, mutta hyvin tehtynä se on kevyt ja palvelee liiketoimintaa. Autamme rakentamaan juuri teidän kokoisenne ratkaisun.",
     strong: "ISMS:n perusteet ovat kunnossa.",
   },
 };
@@ -69,7 +191,7 @@ const TOPICS = {
 const PERFECT_PITCH = {
   icon: "🚀",
   title: "Osaaminen on huippuluokkaa!",
-  pitch: "Oletteko jo sertifioituja? Tarjoamme riippumattomia sisäisiä auditointeja ja valmiusarviointeja, joilla varmistatte, että myös käytäntö vastaa osaamista.",
+  pitch: "Osaaminen on olemassa – onko sille jo todistus? Sertifikaatti tekee osaamisestanne näkyvää asiakkaille. Jutellaan, kuinka lähellä olette.",
 };
 
 const GAMES = [
