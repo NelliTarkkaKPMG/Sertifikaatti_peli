@@ -215,9 +215,12 @@
       </div>
       ${suggestionsHtml(mergeTopics(), 3, true)}
       <div class="result">
-        <div class="prize">${esc(CONFIG.prizeText)}<br><small>${new Date().toLocaleString("fi-FI")}</small></div>
-        <p class="lead" style="margin-top:20px">${esc(CONFIG.ctaText)}</p>
-        <a class="btn" href="${esc(CONFIG.ctaLink)}">${esc(CONFIG.ctaButton)}</a>
+        <div class="prize">
+          <strong>${esc(CONFIG.prizeText)}</strong>
+          <div class="talk">${esc(CONFIG.talkTitle)}</div>
+          <div class="chips">${talkTopics().map((t) => `<span class="chip">${t.icon} ${esc(t.title)}</span>`).join("")}</div>
+          <small>${new Date().toLocaleString("fi-FI")}</small>
+        </div>
         <button class="btn secondary" id="share">Haasta kaveri 📲</button>
         <button class="btn secondary" id="hub">Takaisin valikkoon</button>
       </div>
@@ -244,31 +247,37 @@
     return all;
   }
 
-  function topicLink(title) {
-    return `mailto:${CONFIG.contactEmail}?subject=${encodeURIComponent("ISO 27001: " + title)}`;
+  // Heikoimmat aiheet; jos kaikki oikein, ehdotetaan sisäistä auditointia ja sertifiointia
+  function weakTopics(topics, max) {
+    return Object.entries(topics).filter(([k, v]) => TOPICS[k] && v.missed > 0)
+      .sort((a, b) => b[1].missed / b[1].asked - a[1].missed / a[1].asked || b[1].missed - a[1].missed)
+      .slice(0, max).map(([k]) => k);
+  }
+
+  function talkTopics() {
+    const weak = weakTopics(mergeTopics(), 3);
+    return (weak.length ? weak : ["internal_audit", "certification"]).map((k) => TOPICS[k]);
   }
 
   function suggestionsHtml(topics, max, isFinal) {
     const entries = Object.entries(topics).filter(([k]) => TOPICS[k]);
     // Eniten virheitä (suhteessa kysymyksiin) ensin
-    const weak = entries.filter(([, v]) => v.missed > 0)
-      .sort((a, b) => b[1].missed / b[1].asked - a[1].missed / a[1].asked || b[1].missed - a[1].missed)
-      .slice(0, max);
+    const weak = weakTopics(topics, max);
     const strong = entries.filter(([, v]) => v.missed === 0 && v.asked > 0).map(([k]) => TOPICS[k]);
 
-    const card = (t, link) => `
+    const card = (t) => `
       <div class="suggestion">
         <div class="s-head"><span class="s-icon">${t.icon}</span><strong>${esc(t.title)}</strong></div>
         <p>${esc(t.pitch)}</p>
-        <a class="s-link" href="${esc(link)}">Kysy tästä →</a>
+        <div class="s-link">💬 Kysy lisää ${esc(CONFIG.stand)}</div>
       </div>`;
 
     let html = `<h2 class="s-title">${isFinal ? "📋 Teidän tietoturvan terveystarkastus" : "💡 Vastaustesi perusteella"}</h2>`;
     if (weak.length) {
       html += `<p class="lead">${isFinal ? "Näihin aiheisiin kannattaisi tarttua ensimmäisenä:" : "Tässä aiheessa voisimme auttaa:"}</p>`;
-      html += weak.map(([k]) => card(TOPICS[k], topicLink(TOPICS[k].title))).join("");
+      html += weak.map((k) => card(TOPICS[k])).join("");
     } else {
-      html += card(PERFECT_PITCH, topicLink("Sisäinen auditointi / valmiusarviointi"));
+      html += card(PERFECT_PITCH);
     }
     if (isFinal && strong.length) {
       html += `<div class="strengths"><strong>💪 Vahvuutesi</strong><ul>${strong.map((t) => `<li>${esc(t.strong)}</li>`).join("")}</ul></div>`;

@@ -3,13 +3,12 @@
 
 const CONFIG = {
   brand: "ISO 27001 -haaste",
-  // Yhteydenottojen sähköposti. Ehdotuskorttien "Kysy tästä" -napit lisäävät aiheen otsikkoriville.
-  contactEmail: "you@example.com",
-  // Näytetään loppuruudussa. Vaihda omaan yhteystietoon / kampanjalinkkiin.
-  ctaText: "Haluatko varmistaa, että teidän ISMS läpäisee auditoinnin? Jutellaan!",
-  ctaLink: "mailto:you@example.com?subject=ISO%2027001",
-  ctaButton: "Ota yhteyttä",
+  // Messuosaston nimi/numero, näytetään ehdotuskorteissa ja loppuruudussa (esim. "osastolla B12").
+  stand: "osastollamme",
+  // Loppuruudun palkintolaatikko
   prizeText: "Näytä tämä ruutu osastollamme ja nappaa palkinto! 🎁",
+  // Palkintolaatikossa näytettävä otsikko aiheille, joista kannattaa jutella (henkilökunnalle keskustelun avaukseksi)
+  talkTitle: "Juttele asiantuntijamme kanssa näistä:",
 };
 
 // Aihealueet, joihin kysymykset liittyvät (kysymyksen kenttä "topic").
