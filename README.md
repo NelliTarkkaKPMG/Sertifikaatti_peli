@@ -26,6 +26,9 @@ Everything is in **`questions.js`**:
 - `TOPICS` – quiz topics, business explanations, linked service
 - `GAMES` – quiz questions
 
+## Branding
+Follows the KPMG visual package: KPMG blue / Cobalt primary colours, Purple–Cobalt linear gradient, traffic-light colours for right/wrong, Arial body text (headings use KPMG Bold when installed, else Arial). The logo (`assets/logo-*.svg`) and line icons (`assets/icons/`) come from the Visuals and Iconography decks; icons are coloured with CSS masks.
+
 ## Publishing (GitHub Pages)
 1. Repo → Settings → Pages → *Deploy from a branch* → choose the branch and `/ (root)`.
 2. Open `https://<user>.github.io/<repo>/qr.html` – it shows a printable QR code pointing to the game.

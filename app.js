@@ -26,6 +26,8 @@
   const byId = (id) => document.getElementById(id);
   const onClick = (id, fn) => { const el = byId(id); if (el) el.onclick = fn; };
   const uniq = (a) => a.filter((x, i) => a.indexOf(x) === i);
+  // Brändin viivaikonit (assets/icons/<nimi>.png), väritetään CSS-maskilla
+  const icon = (name) => `<span class="ico" aria-hidden="true" style="--icon:url('assets/icons/${name}.png')"></span>`;
 
   function render(html, { showHome = false } = {}) {
     app.innerHTML = `<div class="fade">${html}</div>`;
@@ -57,6 +59,7 @@
     const cards = GAMES.map((g) => {
       const r = state.results[g.id];
       return `<button class="tile" data-id="${g.id}">
+        ${icon(g.id)}
         <span class="tag">${esc(g.tag)}</span>
         <span class="tile-title">${esc(g.title)}</span>
         <span class="tile-sub">${esc(g.subtitle)}</span>
@@ -67,6 +70,7 @@
       ${state.company ? `<p class="eyebrow">${esc(state.company)}</p>` : ""}
       <h2>Valitkaa osio</h2>
       <button class="tile featured" id="surveyCard">
+        ${icon("survey")}
         <span class="tag">${esc(SURVEY.tag)}</span>
         <span class="tile-title">${esc(SURVEY.title)}</span>
         <span class="tile-sub">${esc(SURVEY.subtitle)}</span>
@@ -271,7 +275,7 @@
       <section class="block">
         <h2>Suositeltu etenemispolku</h2>
         <ol class="path">
-          ${path.map((k) => `<li><h4>${esc(SERVICES[k].name)}</h4><p>${esc(SERVICES[k].text)}</p></li>`).join("")}
+          ${path.map((k) => `<li>${icon(k)}<h4>${esc(SERVICES[k].name)}</h4><p>${esc(SERVICES[k].text)}</p></li>`).join("")}
         </ol>
       </section>
       <div class="talkbox">
