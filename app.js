@@ -459,8 +459,11 @@
       ${reasonsHtml(3)}
       <section class="block">
         <h2>${esc(UI.pathTitle)}</h2>
+        <p class="lead">${esc(pathIsTailored() ? UI.pathLead : UI.pathLeadGeneric)}</p>
         <ol class="path">
-          ${path.map((k) => `<li>${icon(k)}<h4>${esc(SERVICES[k].name)}</h4><p>${esc(SERVICES[k].text)}</p></li>`).join("")}
+          ${path.map((p) => `<li>${icon(p.key)}<h4>${esc(SERVICES[p.key].name)}</h4>
+            <p class="why"><span>${esc(UI.whyLabel)}</span> ${esc(p.why)}</p>
+            <p>${esc(SERVICES[p.key].text)}</p></li>`).join("")}
         </ol>
       </section>
       ${standards.length ? `<section class="block">
@@ -472,7 +475,7 @@
       <div class="talkbox">
         <h2>${esc(CONFIG.talkTitle)}</h2>
         <p>${esc(CONFIG.talkText)}</p>
-        <div class="chips">${path.slice(0, 3).map((k) => esc(SERVICES[k].name))
+        <div class="chips">${path.map((p) => esc(SERVICES[p.key].name))
           .concat(standards.map((k) => esc(STANDARDS[k].code)))
           .map((t) => `<span class="chip">${t}</span>`).join("")}</div>
         <p class="note">${esc(UI.findUs)} ${esc(CONFIG.stand)}.</p>
@@ -485,20 +488,41 @@
     onClick("newPlayer", newPlayer);
   }
 
-  // Etenemispolku, aina kolme vaihetta:
-  // 1. gap-analyysi, 2. vastausten perusteella tärkein palvelu, 3. sertifiointivalmiuden arviointi.
-  // Toisen vaiheen järjestys: nykytilan puutteet, tarvekartoituksen syyt, visojen aiheet.
+  // Räätälöity etenemispolku, aina kolme vaihetta. Jokaiselle vaiheelle perustelu ("Miksi teille").
+  // Vaiheiden runko riippuu lähtötilanteesta:
+  //   alkuvaihe:      gap-analyysi → ISMS:n käyttöönotto → tärkein tarve
+  //   keskivaihe:     gap-analyysi → tärkein tarve → sertifiointivalmius
+  //   lähes valmis:   tärkein tarve → sertifiointivalmius → jatkuva tuki
+  // Tarpeet painojärjestyksessä: nykytilan puutteet, tarvekartoituksen syyt, visojen aiheet.
   function recommendedPath(topics) {
     const check = checklistGame() && state.results[checklistGame().id];
-    const ready = (state.survey && state.survey.reasons.includes("ready")) || (check && readinessPct(check) >= 75);
-    const extra = [];
-    if (check) checklistGaps(check).forEach((q) => extra.push(q.service));
-    if (state.survey) state.survey.reasons.forEach((k) => extra.push(REASONS[k].service));
-    weakTopics(topics, 3).forEach((k) => extra.push(TOPICS[k].service));
-    const middle = extra.find((k) => !["gap", "readiness", "continuous"].includes(k))
-      || (ready ? "internal_audit" : "implementation");
-    return ["gap", middle, "readiness"];
+    const pct = check ? readinessPct(check) : null;
+    const reasons = state.survey ? state.survey.reasons : [];
+    const early = check ? pct < 40 : reasons.includes("structure");
+    const ready = check ? pct >= 75 : reasons.includes("ready");
+
+    const needs = [];
+    if (check) checklistGaps(check).forEach((q) => needs.push({ key: q.service, why: UI.whyChecklist(q.short) }));
+    reasons.filter((k) => k !== "ready").forEach((k) => needs.push({ key: REASONS[k].service, why: UI.whySurvey(REASONS[k].title) }));
+    weakTopics(topics, 3).forEach((k) => needs.push({ key: TOPICS[k].service, why: UI.whyQuiz(TOPICS[k].title) }));
+    const topNeed = (exclude) => needs.find((n) => !exclude.includes(n.key));
+    const step = (key, why) => ({ key, why: why || UI.whyStep[key] });
+
+    if (ready) {
+      const n = topNeed(["readiness", "continuous"]);
+      return [n ? step(n.key, n.why) : step("internal_audit", UI.whyStep.internalAuditReady), step("readiness"), step("continuous")];
+    }
+    if (early) {
+      const n = topNeed(["gap", "implementation"]);
+      return [step("gap", UI.whyStep.gapEarly), step("implementation"), n ? step(n.key, n.why) : step("readiness")];
+    }
+    const n = topNeed(["gap", "readiness", "continuous"]);
+    return [step("gap"), n ? step(n.key, n.why) : step("implementation"), step("readiness")];
   }
+
+  // Onko polku räätälöity vastausten perusteella (muuten näytetään yleinen ehdotus)
+  const pathIsTailored = () => Boolean(state.survey || (checklistGame() && state.results[checklistGame().id]) || weakTopics(mergeTopics(), 1).length);
+
 
 
   // --- Aiheet vastausten perusteella -----------------------------------------

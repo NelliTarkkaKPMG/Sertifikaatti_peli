@@ -16,7 +16,7 @@ The menu has two sections: **Yrityksenne** (about the organisation: needs assess
 
 After each quiz, topics they got wrong are shown with a business explanation and the matching service ("Palvelumme: …").
 
-The **summary** shows business need, knowledge level, business benefits, a **three-step recommended path of our services** (always Gap-analyysi first and Sertifiointivalmiuden arviointi last; the middle step is the service that best matches their answers), and a box asking them to show the screen to a consultant at the stand.
+The **summary** shows business need, knowledge level, business benefits, a **three-step recommended path tailored to their answers** (early stage: gap analysis → ISMS implementation → top need; in between: gap analysis → top need → readiness assessment; nearly ready: top need → readiness assessment → ongoing support). Each step shows a "Miksi teille / Why for you" line pointing to the answer behind it, and a box asking them to show the screen to a consultant at the stand.
 
 Nothing is stored or sent anywhere; answers stay in the visitor's browser.
 
