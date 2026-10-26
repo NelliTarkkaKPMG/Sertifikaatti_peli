@@ -53,5 +53,8 @@ Alternatively use **New → Blueprint**, which reads `render.yaml` from the repo
 | `https://<name>.onrender.com/?kiosk` | **Tablets at the stand.** Adds a "Valmis – uusi pelaaja / Done – new player" button to the summary, and resets to the language screen after 3 minutes without use, so the next visitor never sees the previous visitor's answers. |
 | `https://<name>.onrender.com/qr.html` | Printable QR poster pointing to the game |
 
+## After changing content
+Raise the version number in `index.html` (`?v=6` → `?v=7` on the four files) so browsers load the new files instead of cached ones. If the change is large, also raise `STORE_KEY` in `app.js` so saved progress from the old version is cleared.
+
 ## Run locally
 `python3 -m http.server` and open http://localhost:8000

@@ -1,7 +1,8 @@
 (function () {
   "use strict";
 
-  const STORE_KEY = "iso27001-game-v5";
+  // Vaihda versio, kun sisältö muuttuu merkittävästi: vanha tallennettu eteneminen nollautuu.
+  const STORE_KEY = "iso27001-game-v6";
   const LANGS = { fi: "Suomi", en: "English" };
 
   const app = document.getElementById("app");
@@ -523,5 +524,11 @@
   }
 
   if (!CONTENT[state.lang]) { state.lang = null; showLanguage(); }
-  else { setLang(state.lang); if (state.company || anyDone()) showHub(); else showStart(); }
+  else {
+    setLang(state.lang);
+    const profileDone = PROFILE.questions.every((q) => (state.profile || {})[q.id] !== undefined);
+    if (!(state.company || anyDone())) showStart();
+    else if (!profileDone) showProfileQuestion(PROFILE.questions.findIndex((q) => (state.profile || {})[q.id] === undefined));
+    else showHub();
+  }
 })();
