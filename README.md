@@ -25,19 +25,19 @@ The first screen asks for the language (Suomi / English). The whole game follows
 
 ## Editing content
 Finnish content is in **`content-fi.js`**, English in **`content-en.js`**. Both have the same structure; keep the keys (`id`, `topic`, `service`, `reason`), answer order and `correct` indexes identical in both files. Each file contains:
-- `UI` – all buttons, headings and labels
-- `PROFILE` + `STANDARDS` – the two opening questions and the ISO 42001 / 22301 / 9001 texts
-- `CONFIG` – stand name and texts
-- `SERVICES` – your consulting services (edit to match your offering)
-- `SURVEY` + `REASONS` – needs assessment and business benefits (each reason points to a service)
-- `TOPICS` – quiz topics, business explanations, linked service
-- `GAMES` – quiz questions
+- `UI`: all buttons, headings and labels
+- `PROFILE` + `STANDARDS`: the two opening questions and the ISO 42001 / 22301 / 9001 texts
+- `CONFIG`: stand name and texts
+- `SERVICES`: your consulting services (edit to match your offering)
+- `SURVEY` + `REASONS`: needs assessment and business benefits (each reason points to a service)
+- `TOPICS`: quiz topics, business explanations, linked service
+- `GAMES`: quiz questions
 
 ## Branding
 Follows the KPMG visual package: KPMG blue / Cobalt primary colours, Purple–Cobalt linear gradient, traffic-light colours for right/wrong, Arial body text (headings use KPMG Bold when installed, else Arial). The logo (`assets/logo-*.svg`) and line icons (`assets/icons/`) come from the Visuals and Iconography decks; icons are coloured with CSS masks.
 
 ## Deploying to Render
-The game is a static site (no build, no server, no database), so any number of devices can play at the same time – each runs its own copy in the browser.
+The game is a static site (no build, no server, no database), so any number of devices can play at the same time: each runs its own copy in the browser.
 
 1. In Render: **New → Static Site** and connect this GitHub repository.
 2. Branch: the branch with this code (e.g. `main` after merging).
@@ -50,7 +50,7 @@ Alternatively use **New → Blueprint**, which reads `render.yaml` from the repo
 | Address | Use |
 |---|---|
 | `https://<name>.onrender.com/` | Visitors' own phones (behind the QR code) |
-| `https://<name>.onrender.com/?kiosk` | **Tablets at the stand.** Adds a "Valmis – uusi pelaaja / Done – new player" button to the summary, and resets to the language screen after 3 minutes without use, so the next visitor never sees the previous visitor's answers. |
+| `https://<name>.onrender.com/?kiosk` | **Tablets at the stand.** Adds a "Valmis, uusi pelaaja / Done, new player" button to the summary, and resets to the language screen after 3 minutes without use, so the next visitor never sees the previous visitor's answers. |
 | `https://<name>.onrender.com/qr.html` | Printable QR poster pointing to the game |
 
 ## After changing content

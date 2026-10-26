@@ -474,7 +474,7 @@
         <h2>${esc(CONFIG.talkTitle)}</h2>
         <p>${esc(CONFIG.talkText)}</p>
         <div class="chips">${path.slice(0, 3).map((k) => esc(SERVICES[k].name))
-          .concat(standards.map((k) => esc(STANDARDS[k].name.split(" – ")[0])))
+          .concat(standards.map((k) => esc(STANDARDS[k].code)))
           .map((t) => `<span class="chip">${t}</span>`).join("")}</div>
         <p class="note">${esc(UI.findUs)} ${esc(CONFIG.stand)}.</p>
       </div>
