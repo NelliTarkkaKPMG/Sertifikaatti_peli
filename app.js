@@ -19,6 +19,8 @@
   // Näyttää "Uusi pelaaja" -napin ja palaa kielivalintaan, kun laitetta ei ole käytetty hetkeen.
   const KIOSK = new URLSearchParams(location.search).has("kiosk");
   const KIOSK_IDLE_MS = 3 * 60 * 1000;
+  // Positiivinen sävy: valmiusprosentti näytetään vasta tästä alkaen, sitä ennen pelkkä taso ja teksti
+  const SHOW_PCT_FROM = 40;
 
   const fresh = (lang = null) => ({ lang, company: "", profile: {}, results: {}, survey: null });
   let state = load();
@@ -140,6 +142,12 @@
       .map((q) => q.recommend);
   }
 
+  // Valikon tila: luku näytetään vain, kun se on kannustava, muuten "Tehty"
+  function tileStatus(g, r) {
+    if (g.type === "checklist") { const pct = readinessPct(r); return pct >= SHOW_PCT_FROM ? UI.readinessOf(pct) : UI.done; }
+    return r.correct > 0 ? UI.correctOf(r.correct, g.questions.length) : UI.done;
+  }
+
   // --- Valikko ---------------------------------------------------------------
   function showHub() {
     const status = (done, text) => done ? `<span class="status done">${text}</span>` : "";
@@ -150,7 +158,7 @@
         <span class="tag">${esc(g.tag)}</span>
         <span class="tile-title">${esc(g.title)}</span>
         <span class="tile-sub">${esc(g.subtitle)}</span>
-        ${status(r, r ? (g.type === "checklist" ? UI.readinessOf(readinessPct(r)) : UI.correctOf(r.correct, g.questions.length)) : "")}
+        ${status(r, r ? esc(tileStatus(g, r)) : "")}
       </button>`;
     };
     const orgGames = GAMES.filter((g) => g.type === "checklist").map(tile).join("");
@@ -336,7 +344,8 @@
     render(`
       <div class="panel">
         <p class="eyebrow">${esc(game.title)}</p>
-        <div class="score">${r.correct} <span>/ ${r.total}</span></div>
+        <h1 class="result-title">${esc(knowledgeLevel(r.correct / r.total).title)}</h1>
+        ${r.correct > 0 ? `<div class="score small">${esc(UI.correctOf(r.correct, r.total))}</div>` : ""}
         <p>${esc(knowledgeLevel(r.correct / r.total).text)}</p>
       </div>
       ${topicsHtml(topics, 2)}
@@ -400,7 +409,7 @@
         <p class="eyebrow">${esc(game.title)}</p>
         <h1 class="result-title">${esc(level.title)}</h1>
         <div class="meter" role="img" aria-label="${esc(UI.readinessOf(pct))}"><div style="width:${Math.max(4, pct)}%"></div></div>
-        <p class="stat-sub">${esc(UI.readinessOf(pct))}</p>
+        ${pct >= SHOW_PCT_FROM ? `<p class="stat-sub">${esc(UI.readinessOf(pct))}</p>` : ""}
         <p>${esc(level.text)}</p>
       </div>
       ${gaps.length ? `<section class="block"><h2>${esc(UI.gapsTitle)}</h2>
@@ -434,12 +443,12 @@
     if (check) {
       const pct = readinessPct(check);
       const level = checklistGame().levels.find((l) => pct / 100 >= l.min);
-      summary.push(`<div class="stat"><span class="stat-label">${esc(UI.readinessLabel)}</span><strong>${esc(level.title)}</strong><span class="stat-sub">${esc(UI.readinessOf(pct))}</span></div>`);
+      summary.push(`<div class="stat"><span class="stat-label">${esc(UI.readinessLabel)}</span><strong>${esc(level.title)}</strong>${pct >= SHOW_PCT_FROM ? `<span class="stat-sub">${esc(UI.readinessOf(pct))}</span>` : ""}</div>`);
     }
     if (results.length) {
       const correct = results.reduce((s, r) => s + r.correct, 0);
       const totalQ = results.reduce((s, r) => s + r.total, 0);
-      summary.push(`<div class="stat"><span class="stat-label">${esc(UI.knowledgeLabel)}</span><strong>${esc(knowledgeLevel(correct / totalQ).title)}</strong><span class="stat-sub">${esc(UI.correctOf(correct, totalQ))}</span></div>`);
+      summary.push(`<div class="stat"><span class="stat-label">${esc(UI.knowledgeLabel)}</span><strong>${esc(knowledgeLevel(correct / totalQ).title)}</strong>${correct > 0 ? `<span class="stat-sub">${esc(UI.correctOf(correct, totalQ))}</span>` : ""}</div>`);
     }
     const path = recommendedPath(topics);
     const standards = extraStandards();

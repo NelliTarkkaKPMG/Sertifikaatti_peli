@@ -107,14 +107,14 @@ h3.section { margin: 18px 0 0; font-size: 13px; text-transform: uppercase; lette
 .opt:hover:not(:disabled) { border-color: var(--cobalt); }
 .options.two .opt { text-align: center; padding: 18px 10px; font-weight: 500; }
 .opt.correct { border-color: var(--ok); background: var(--ok-soft); }
-.opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.opt.wrong { border-color: #B2B2B2; background: #E5E5E5; color: var(--muted); }
 .opt:disabled { cursor: default; }
 .feedback { margin-top: 6px; padding: 14px; border-radius: 8px; background: var(--bg); font-size: 15px; border-left: 3px solid var(--line); }
 .feedback strong { display: block; margin-bottom: 2px; }
 .feedback.ok { border-left-color: var(--ok); }
 .feedback.ok strong { color: var(--ok); }
-.feedback.bad { border-left-color: var(--bad); }
-.feedback.bad strong { color: var(--bad); }
+.feedback.bad { border-left-color: var(--cobalt); }
+.feedback.bad strong { color: var(--cobalt); }
 
 /* Tulokset */
 .result-title { font-size: 26px; }
@@ -180,3 +180,5 @@ h3.section { margin: 18px 0 0; font-size: 13px; text-transform: uppercase; lette
 /* Muut standardit */
 .item.std { border-left: 3px solid var(--purple); }
 .note-box { background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius); padding: 12px 14px; color: var(--muted); font-size: 14px; }
+
+.score.small { font-family: var(--body); font-size: 15px; font-weight: 700; color: var(--muted); }

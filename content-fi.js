@@ -30,16 +30,16 @@ const UI = {
   meterScale: ["Vähäinen", "Kohtalainen", "Suuri"],
   benefits: "Liiketoimintahyödyt",
   benefitsYou: "Liiketoimintahyödyt teille",
-  timeUp: "Aika päättyi",
-  correct: "Oikein",
-  wrong: "Väärin",
+  timeUp: "Aika loppui – tässä oikea vastaus",
+  correct: "Oikein!",
+  wrong: "Hyvä yritys! Oikea vastaus on merkitty vihreällä.",
   showResult: "Näytä tulos",
   next: "Seuraava",
   nextSection: "Seuraava osio:",
   knowledgeLevels: [
-    { min: 0.85, title: "Asiantuntija", text: "Tunnet standardin erinomaisesti. Sinunlaisesi osaaja on ISO 27001 -projektin tärkein voimavara – me tuomme rinnalle menetelmät ja kokemuksen sertifiointiin asti." },
-    { min: 0.6, title: "Hyvä perustietämys", text: "Tunnet standardin perusteet hyvin. Muutamat yksityiskohdat ovat juuri niitä, joihin auditoinneissa usein kompastutaan – niissä voimme auttaa." },
-    { min: 0, title: "Hyvä hetki perehtyä", text: "ISO 27001 ei ole kaikille arkipäivää – siksi teemme sen kanssa töitä päivittäin. Kerromme mielellämme lisää osastollamme." },
+    { min: 0.85, title: "Huippuosaaja!", text: "Upeaa – tunnet standardin erinomaisesti! Tällaisella osaamisella ISO 27001 -työ on vahvoissa käsissä." },
+    { min: 0.5, title: "Hienoa työtä!", text: "Tunnet standardin hyvin! Matkan varrella tuli vastaan muutama hyödyllinen yksityiskohta, joista on iloa myös käytännön työssä." },
+    { min: 0, title: "Hyvä alku!", text: "Hienoa, että lähdit mukaan – nyt tiedät taas vähän enemmän ISO 27001:stä! Asiantuntijamme kertovat mielellään lisää." },
   ],
   needLabel: "Liiketoimintatarve",
   knowledgeLabel: "Oma ISO 27001 -osaamisesi",
@@ -50,15 +50,15 @@ const UI = {
   findUs: "Tavattavissa",
   continueTests: "Jatka testejä",
   backToMenu: "Takaisin valikkoon",
-  whatItMeans: "Mitä tämä tarkoittaa liiketoiminnallenne",
+  whatItMeans: "Hyvä tietää",
   ourService: "Palvelumme",
   strongTitle: "Tunnet aiheen hyvin",
   strongText: "Tiedät, mitä standardi vaatii. Seuraava kysymys on, kuinka lähellä organisaationne on sertifiointia – sen kertoo valmiusarviointi.",
   newPlayer: "Valmis – uusi pelaaja",
   readinessOf: (p) => `Valmiusaste ${p} %`,
   readinessLabel: "Nykytila",
-  gapsTitle: "Kehityskohteet",
-  inPlaceTitle: "Jo kunnossa",
+  gapsTitle: "Seuraavat askeleet",
+  inPlaceTitle: "Jo kunnossa – hienoa!",
 };
 
 const CONFIG = {
@@ -228,7 +228,7 @@ const SURVEY = {
   levels: [
     { min: 9, title: "Selvä liiketoimintatarve", text: "Sertifikaatista olisi teille suoraa liiketoimintahyötyä, ja asiakkaanne todennäköisesti edellyttävät sitä lähivuosina." },
     { min: 5, title: "Merkittävä hyöty", text: "Sertifikaatti vahvistaisi kilpailuasemaanne ja vähentäisi asiakkaiden tietoturvakyselyihin kuluvaa työtä." },
-    { min: 0, title: "Strateginen etu", text: "Välitöntä tarvetta ei välttämättä ole, mutta vaatimukset kiristyvät. Ajoissa aloitettu työ on kustannustehokkainta." },
+    { min: 0, title: "Strateginen etu", text: "Teillä on hyvä tilaisuus edetä omassa tahdissa. Ajoissa aloitettu työ on kustannustehokkainta ja tuo kilpailuetua." },
   ],
 };
 
@@ -284,7 +284,7 @@ const REASONS = {
 const TOPICS = {
   internal_audit: {
     title: "Sisäinen auditointi",
-    pitch: "Sisäinen auditointi (9.2) on yleisimpiä poikkeamien lähteitä sertifiointiauditoinneissa. Sen tehtävä on löytää puutteet ennen asiakasta tai hyökkääjää.",
+    pitch: "Hyvin hoidettu sisäinen auditointi (9.2) on yksi parhaista tavoista varmistaa sujuva sertifiointi – se nostaa kehitysideat esiin ajoissa ja omin ehdoin.",
     service: "internal_audit",
   },
   risk: {
@@ -299,12 +299,12 @@ const TOPICS = {
   },
   management: {
     title: "Johdon vastuu",
-    pitch: "ISO 27001 tekee tietoturvasta johtamisen välineen eikä pelkästään IT:n asiaa. Myös NIS2 asettaa johdolle henkilökohtaisia velvoitteita.",
+    pitch: "ISO 27001 tekee tietoturvasta johdon työkalun eikä pelkästään IT:n asiaa – ja tukee johtoa myös NIS2:n velvoitteissa.",
     service: "training",
   },
   awareness: {
     title: "Henkilöstön osaaminen",
-    pitch: "Merkittävä osa tietoturvapoikkeamista alkaa inhimillisestä virheestä. Standardi edellyttää koulutusta ja näyttöä osaamisesta.",
+    pitch: "Osaava henkilöstö on organisaation vahvin tietoturvan voimavara. Standardi tukee säännöllistä koulutusta ja tekee osaamisesta näkyvää.",
     service: "training",
   },
   improvement: {
@@ -319,7 +319,7 @@ const TOPICS = {
   },
   basics: {
     title: "ISMS:n perusteet",
-    pitch: "Hallintajärjestelmä kuulostaa raskaalta, mutta oikein mitoitettuna se on kevyt ja tukee liiketoimintaa.",
+    pitch: "Oikein mitoitettu hallintajärjestelmä on kevyt ja tukee liiketoimintaa arjessa – juuri teidän kokoisenanne.",
     service: "implementation",
   },
 };
@@ -446,22 +446,22 @@ const GAMES = [
     ],
     // Tulostasot valmiusasteen mukaan (0–1)
     levels: [
-      { min: 0.75, title: "Vakiintunut", text: "Monet keskeiset käytännöt ovat jo käytössä. Sertifiointi voi olla lähempänä kuin arvaattekaan – valmiusarviointi kertoo, mitä vielä puuttuu." },
-      { min: 0.4, title: "Kehittyvä", text: "Hyvä alku: osa käytännöistä on kunnossa, osa puuttuu. Gap-analyysi priorisoi loput ja näyttää realistisen aikataulun." },
-      { min: 0, title: "Alkuvaihe", text: "Monet perusasiat ovat vielä tekemättä. Jäsennelty käyttöönotto etenee hallitusti, ja pääsette nopeasti vauhtiin." },
+      { min: 0.75, title: "Vahva pohja", text: "Hienoa – monet keskeiset käytännöt ovat jo käytössä! Sertifiointi voi olla lähempänä kuin arvaattekaan, ja valmiusarviointi näyttää viimeiset askeleet." },
+      { min: 0.4, title: "Hyvässä vauhdissa", text: "Hyvä työ: iso osa perustasta on jo olemassa! Gap-analyysi auttaa priorisoimaan seuraavat askeleet ja näyttää realistisen aikataulun." },
+      { min: 0, title: "Matka alkaa", text: "Teillä on edessä selkeä polku – ja juuri tästä vaiheesta eteneminen on usein nopeinta ja palkitsevinta. Autamme rakentamaan perustan hallitusti." },
     ],
     // "short" näytetään Jo kunnossa -listassa, "why" ja "service" kehityskohteissa
     questions: [
-      { id: "policy", ref: "5.2 · A.5.1", q: "Onko teillä johdon hyväksymä tietoturvapolitiikka, joka on viestitty koko henkilöstölle?", short: "Tietoturvapolitiikka", why: "Politiikka on hallintajärjestelmän perusta ja osoittaa johdon sitoutumisen – auditoija aloittaa usein siitä.", service: "implementation" },
-      { id: "risk", ref: "6.1.2 · 8.2", q: "Onko teillä arvioitu ja dokumentoitu tietoturvariskit viimeisen vuoden aikana?", short: "Riskienarviointi", why: "Ilman ajantasaista riskiarviota suojaukset valitaan arvaamalla. Riskiarvio ohjaa koko standardin toteutusta.", service: "risk" },
-      { id: "assets", ref: "A.5.9", q: "Onko teillä ajantasainen luettelo järjestelmistä, laitteista ja tiedoista sekä niiden omistajista?", short: "Tieto-omaisuuden luettelo", why: "Sitä ei voi suojata, mitä ei tunne. Omaisuusluettelo on riskienarvioinnin lähtökohta.", service: "gap" },
-      { id: "access", ref: "A.5.15 · A.5.18", q: "Onko teillä käyttöoikeudet myönnetty tarpeen mukaan ja katselmoitu säännöllisesti?", short: "Käyttöoikeuksien hallinta", why: "Vanhentuneet ja liian laajat käyttöoikeudet ovat yksi yleisimmistä auditointihavainnoista ja tietomurtojen reiteistä.", service: "gap" },
-      { id: "mfa", ref: "A.8.5", q: "Onko teillä monivaiheinen tunnistautuminen käytössä kaikissa kriittisissä järjestelmissä?", short: "Monivaiheinen tunnistautuminen", why: "Monivaiheinen tunnistautuminen estää valtaosan tunnusten kalasteluun perustuvista hyökkäyksistä.", service: "gap" },
-      { id: "backup", ref: "A.8.13", q: "Onko teillä testattu varmuuskopioiden palauttaminen käytännössä?", short: "Testatut varmuuskopiot", why: "Varmuuskopio on arvokas vain, jos sen palauttaminen toimii. Testaamaton varmuuskopio on riski kiristyshaittaohjelmatilanteessa.", service: "gap" },
-      { id: "incident", ref: "A.5.24–A.5.26", q: "Onko teillä sovittu prosessi ja vastuuhenkilöt tietoturvapoikkeamien käsittelyyn?", short: "Poikkeamien käsittely", why: "NIS2 edellyttää merkittävistä poikkeamista ilmoittamista tiukoissa määräajoissa – se onnistuu vain sovitulla prosessilla.", service: "nis2" },
-      { id: "suppliers", ref: "A.5.19–A.5.20", q: "Onko teillä asetettu toimittajille ja pilvipalveluille tietoturvavaatimukset sopimuksissa?", short: "Toimittajavaatimukset", why: "Merkittävä osa tietoturvapoikkeamista tulee toimitusketjun kautta. Vaatimukset sopimuksissa ovat ensimmäinen suojakeino.", service: "risk" },
-      { id: "training", ref: "7.2–7.3 · A.6.3", q: "Onko teillä henkilöstölle säännöllistä tietoturvakoulutusta, ja kirjataanko osallistuminen?", short: "Henkilöstön koulutus", why: "Inhimillinen virhe on yleinen poikkeaman alku. Standardi edellyttää myös näyttöä koulutuksesta.", service: "training" },
-      { id: "audit", ref: "9.2", q: "Onko teillä auditoitu tietoturvaa sisäisesti tai ulkoisesti viimeisen vuoden aikana?", short: "Tietoturva-auditointi", why: "Säännöllinen auditointi löytää puutteet ennen asiakasta tai hyökkääjää – ja on pakollinen osa ISO 27001:tä.", service: "internal_audit" },
+      { id: "policy", ref: "5.2 · A.5.1", q: "Onko teillä johdon hyväksymä tietoturvapolitiikka, joka on viestitty koko henkilöstölle?", short: "Tietoturvapolitiikka", why: "Politiikka antaa tietoturvatyölle suunnan ja näyttää johdon tuen – siitä on hyvä aloittaa.", service: "implementation" },
+      { id: "risk", ref: "6.1.2 · 8.2", q: "Onko teillä arvioitu ja dokumentoitu tietoturvariskit viimeisen vuoden aikana?", short: "Riskienarviointi", why: "Ajantasainen riskiarvio auttaa kohdistamaan tietoturvan resurssit sinne, missä niistä on eniten hyötyä.", service: "risk" },
+      { id: "assets", ref: "A.5.9", q: "Onko teillä ajantasainen luettelo järjestelmistä, laitteista ja tiedoista sekä niiden omistajista?", short: "Tieto-omaisuuden luettelo", why: "Kun tiedätte, mitä teillä on, suojaukset osuvat oikeaan kohtaan. Luettelo on myös riskienarvioinnin lähtökohta.", service: "gap" },
+      { id: "access", ref: "A.5.15 · A.5.18", q: "Onko teillä käyttöoikeudet myönnetty tarpeen mukaan ja katselmoitu säännöllisesti?", short: "Käyttöoikeuksien hallinta", why: "Ajantasaiset käyttöoikeudet ovat yksinkertainen ja tehokas tapa suojata tietoa – ja auditoijan suosikkiaihe.", service: "gap" },
+      { id: "mfa", ref: "A.8.5", q: "Onko teillä monivaiheinen tunnistautuminen käytössä kaikissa kriittisissä järjestelmissä?", short: "Monivaiheinen tunnistautuminen", why: "Monivaiheinen tunnistautuminen on yksi kustannustehokkaimmista suojauksista: nopea ottaa käyttöön ja erittäin vaikuttava.", service: "gap" },
+      { id: "backup", ref: "A.8.13", q: "Onko teillä testattu varmuuskopioiden palauttaminen käytännössä?", short: "Testatut varmuuskopiot", why: "Testattu palautus tuo varmuuden siitä, että toiminta jatkuu sujuvasti myös häiriön sattuessa.", service: "gap" },
+      { id: "incident", ref: "A.5.24–A.5.26", q: "Onko teillä sovittu prosessi ja vastuuhenkilöt tietoturvapoikkeamien käsittelyyn?", short: "Poikkeamien käsittely", why: "Sovittu prosessi tekee poikkeamatilanteista rauhallisia ja hallittuja – ja auttaa täyttämään NIS2:n ilmoitusvelvoitteet.", service: "nis2" },
+      { id: "suppliers", ref: "A.5.19–A.5.20", q: "Onko teillä asetettu toimittajille ja pilvipalveluille tietoturvavaatimukset sopimuksissa?", short: "Toimittajavaatimukset", why: "Selkeät vaatimukset sopimuksissa tekevät yhteistyöstä turvallista ja ennakoitavaa koko toimitusketjussa.", service: "risk" },
+      { id: "training", ref: "7.2–7.3 · A.6.3", q: "Onko teillä henkilöstölle säännöllistä tietoturvakoulutusta, ja kirjataanko osallistuminen?", short: "Henkilöstön koulutus", why: "Osaava henkilöstö on paras tietoturvan voimavara – ja säännöllisestä koulutuksesta syntyy samalla näyttö auditointia varten.", service: "training" },
+      { id: "audit", ref: "9.2", q: "Onko teillä auditoitu tietoturvaa sisäisesti tai ulkoisesti viimeisen vuoden aikana?", short: "Tietoturva-auditointi", why: "Säännöllinen auditointi nostaa kehitysideat esiin ajoissa ja omin ehdoin – ja on luonteva osa ISO 27001:tä.", service: "internal_audit" },
     ],
   },
   {
