@@ -1,5 +1,59 @@
-// Kaikki sisällöt ovat tässä tiedostossa – muokkaa vapaasti.
+// SUOMENKIELINEN SISÄLTÖ – muokkaa vapaasti.
+// Englanninkielinen vastine on tiedostossa content-en.js. Avaimet (id, topic, service, reason)
+// on pidettävä samoina molemmissa tiedostoissa, jotta kielen vaihto toimii kesken pelin.
 // Visakysymysten oikea vastaus merkitään kentällä "correct" (vaihtoehdon indeksi, 0 = ensimmäinen).
+
+(window.CONTENT = window.CONTENT || {}).fi = (function () {
+
+// Käyttöliittymän tekstit
+const UI = {
+  menu: "‹ Valikko",
+  startEyebrow: "ISO/IEC 27001:2022",
+  startTitle: "Onko yrityksenne valmis ISO 27001 -sertifiointiin?",
+  startLead: "Selvittäkää muutamassa minuutissa, mitä hyötyä sertifikaatista olisi liiketoiminnallenne ja missä vaiheessa organisaationne on. Saatte lopuksi suositellun etenemispolun.",
+  companyLabel: "Yrityksen nimi (vapaaehtoinen)",
+  startBtn: "Aloita",
+  privacy: "Vastauksia ei tallenneta eikä lähetetä minnekään.",
+  chooseSection: "Valitkaa osio",
+  done: "Tehty",
+  recommendStart: "Suosittelemme aloittamaan tästä",
+  testSection: "Testatkaa ISO 27001 -osaamisenne",
+  correctOf: (n, t) => `${n}/${t} oikein`,
+  showSummary: "Näytä yhteenveto ja suositukset",
+  restart: "Aloita alusta",
+  surveyLabel: "Tarvekartoitus",
+  surveyResult: "Tarvekartoituksen tulos",
+  showPath: "Näytä suositeltu etenemispolku",
+  testKnowledge: "Testaa ISO 27001 -osaamisenne",
+  meterAria: "Tarve",
+  meterScale: ["Vähäinen", "Kohtalainen", "Suuri"],
+  benefits: "Liiketoimintahyödyt",
+  benefitsYou: "Liiketoimintahyödyt teille",
+  timeUp: "Aika päättyi",
+  correct: "Oikein",
+  wrong: "Väärin",
+  showResult: "Näytä tulos",
+  next: "Seuraava",
+  nextSection: "Seuraava osio:",
+  knowledgeLevels: [
+    { min: 0.85, title: "Vahva osaaminen", text: "Organisaatiollanne on hyvät valmiudet. Sertifikaatti tekisi osaamisesta todennettavaa myös asiakkaille." },
+    { min: 0.6, title: "Hyvä perusta", text: "Perusteet ovat hallussa. Gap-analyysi osoittaa, mitä sertifiointiin vielä tarvitaan." },
+    { min: 0, title: "Kehityskohteita", text: "Tämä on tyypillinen lähtötilanne. Jäsennelty käyttöönotto vie sertifiointiin hallitusti ja ennustettavasti." },
+  ],
+  needLabel: "Liiketoimintatarve",
+  knowledgeLabel: "ISO 27001 -osaaminen",
+  summary: "Yhteenveto",
+  finalTitle: "Teidän polkunne ISO 27001 -sertifikaattiin",
+  doSurvey: "Tehkää tarvekartoitus tarkempaa suositusta varten",
+  pathTitle: "Suositeltu etenemispolku",
+  findUs: "Tavattavissa",
+  continueTests: "Jatka testejä",
+  backToMenu: "Takaisin valikkoon",
+  whatItMeans: "Mitä tämä tarkoittaa liiketoiminnallenne",
+  ourService: "Palvelumme",
+  strongTitle: "Osaaminen on vahvaa",
+  strongText: "Sertifikaatti tekee osaamisestanne todennettavaa asiakkaille. Valmiusarviointi osoittaa, kuinka lähellä sertifiointia olette.",
+};
 
 const CONFIG = {
   brand: "ISO 27001 -valmiustesti",
@@ -364,3 +418,6 @@ const GAMES = [
     ],
   },
 ];
+
+return { UI, CONFIG, SERVICES, SURVEY, REASONS, TOPICS, GAMES };
+})();

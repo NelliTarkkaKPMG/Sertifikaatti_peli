@@ -1,16 +1,37 @@
 (function () {
   "use strict";
 
-  const STORE_KEY = "iso27001-game-v3";
+  const STORE_KEY = "iso27001-game-v4";
+  const LANGS = { fi: "Suomi", en: "English" };
 
   const app = document.getElementById("app");
   const homeBtn = document.getElementById("homeBtn");
-  document.getElementById("brand").textContent = CONFIG.brand;
+  const langBtn = document.getElementById("langBtn");
   homeBtn.addEventListener("click", () => { stopTimer(); showHub(); });
+  // Kielen vaihto otsikkopalkista: piirretään nykyinen näkymä uudelleen toisella kielellä
+  langBtn.addEventListener("click", () => {
+    setLang(state.lang === "fi" ? "en" : "fi");
+    if (currentScreen) currentScreen();
+  });
 
-  const fresh = () => ({ company: "", results: {}, survey: null });
+  const fresh = (lang = null) => ({ lang, company: "", results: {}, survey: null });
   let state = load();
   let timerId = null;
+  let currentScreen = null;
+  // Valitun kielen sisältö (content-fi.js / content-en.js)
+  let UI, CONFIG, SERVICES, SURVEY, REASONS, TOPICS, GAMES;
+
+  function setLang(lang) {
+    state.lang = lang;
+    ({ UI, CONFIG, SERVICES, SURVEY, REASONS, TOPICS, GAMES } = CONTENT[lang]);
+    document.documentElement.lang = lang;
+    document.title = CONFIG.brand;
+    byId("brand").textContent = CONFIG.brand;
+    homeBtn.textContent = UI.menu;
+    langBtn.textContent = lang === "fi" ? "EN" : "FI";
+    langBtn.setAttribute("aria-label", lang === "fi" ? "Switch to English" : "Vaihda suomeksi");
+    save();
+  }
 
   function load() {
     try { return Object.assign(fresh(), JSON.parse(localStorage.getItem(STORE_KEY))); }
@@ -29,23 +50,38 @@
   // Brändin viivaikonit (assets/icons/<nimi>.png), väritetään CSS-maskilla
   const icon = (name) => `<span class="ico" aria-hidden="true" style="--icon:url('assets/icons/${name}.png')"></span>`;
 
-  function render(html, { showHome = false } = {}) {
+  // screen: näkymän piirtofunktio, jos näkymässä saa vaihtaa kieltä (ei kesken kysymysten)
+  function render(html, { showHome = false, screen = null } = {}) {
     app.innerHTML = `<div class="fade">${html}</div>`;
     homeBtn.hidden = !showHome;
+    currentScreen = screen;
+    langBtn.hidden = !screen || !state.lang;
     window.scrollTo(0, 0);
+  }
+
+  // --- Kielivalinta ----------------------------------------------------------
+  function showLanguage() {
+    render(`
+      <p class="eyebrow">ISO/IEC 27001:2022</p>
+      <h1>Valitse kieli<br><span class="h1-alt">Choose your language</span></h1>
+      <div class="langs">
+        ${Object.entries(LANGS).map(([k, name]) => `<button class="btn lang" data-lang="${k}" lang="${k}">${name}</button>`).join("")}
+      </div>
+    `);
+    app.querySelectorAll("[data-lang]").forEach((b) => b.onclick = () => { setLang(b.dataset.lang); showStart(); });
   }
 
   // --- Aloitus ---------------------------------------------------------------
   function showStart() {
     render(`
-      <p class="eyebrow">ISO/IEC 27001:2022</p>
-      <h1>Onko yrityksenne valmis ISO 27001 -sertifiointiin?</h1>
-      <p class="lead">Selvittäkää muutamassa minuutissa, mitä hyötyä sertifikaatista olisi liiketoiminnallenne ja missä vaiheessa organisaationne on. Saatte lopuksi suositellun etenemispolun.</p>
-      <label for="company" class="label">Yrityksen nimi (vapaaehtoinen)</label>
+      <p class="eyebrow">${esc(UI.startEyebrow)}</p>
+      <h1>${esc(UI.startTitle)}</h1>
+      <p class="lead">${esc(UI.startLead)}</p>
+      <label for="company" class="label">${esc(UI.companyLabel)}</label>
       <input id="company" type="text" maxlength="40" autocomplete="organization" value="${esc(state.company)}">
-      <button class="btn" id="go">Aloita</button>
-      <p class="note">Vastauksia ei tallenneta eikä lähetetä minnekään.</p>
-    `);
+      <button class="btn" id="go">${esc(UI.startBtn)}</button>
+      <p class="note">${esc(UI.privacy)}</p>
+    `, { screen: showStart });
     onClick("go", () => {
       state.company = byId("company").value.trim();
       save();
@@ -63,28 +99,28 @@
         <span class="tag">${esc(g.tag)}</span>
         <span class="tile-title">${esc(g.title)}</span>
         <span class="tile-sub">${esc(g.subtitle)}</span>
-        ${status(r, r ? `${r.correct}/${g.questions.length} oikein` : "")}
+        ${status(r, r ? UI.correctOf(r.correct, g.questions.length) : "")}
       </button>`;
     }).join("");
     render(`
       ${state.company ? `<p class="eyebrow">${esc(state.company)}</p>` : ""}
-      <h2>Valitkaa osio</h2>
+      <h2>${esc(UI.chooseSection)}</h2>
       <button class="tile featured" id="surveyCard">
         ${icon("survey")}
         <span class="tag">${esc(SURVEY.tag)}</span>
         <span class="tile-title">${esc(SURVEY.title)}</span>
         <span class="tile-sub">${esc(SURVEY.subtitle)}</span>
-        ${state.survey ? status(true, "Tehty") : `<span class="status">Suosittelemme aloittamaan tästä</span>`}
+        ${state.survey ? status(true, esc(UI.done)) : `<span class="status">${esc(UI.recommendStart)}</span>`}
       </button>
-      <h3 class="section">Testatkaa ISO 27001 -osaamisenne</h3>
+      <h3 class="section">${esc(UI.testSection)}</h3>
       <div class="grid">${cards}</div>
-      ${anyDone() ? `<button class="btn" id="final">Näytä yhteenveto ja suositukset</button>
-        <button class="btn ghost" id="reset">Aloita alusta</button>` : ""}
-    `);
+      ${anyDone() ? `<button class="btn" id="final">${esc(UI.showSummary)}</button>
+        <button class="btn ghost" id="reset">${esc(UI.restart)}</button>` : ""}
+    `, { screen: showHub });
     onClick("surveyCard", () => showSurveyQuestion([], 0));
     app.querySelectorAll(".tile[data-id]").forEach((el) => el.onclick = () => startGame(GAMES.find((g) => g.id === el.dataset.id)));
     onClick("final", showFinal);
-    onClick("reset", () => { state = fresh(); save(); showStart(); });
+    onClick("reset", () => { state = fresh(state.lang); save(); showStart(); });
   }
 
   // --- Tarvekartoitus --------------------------------------------------------
@@ -92,7 +128,7 @@
     const q = SURVEY.questions[i];
     render(`
       <div class="panel">
-        <div class="progress"><span>Tarvekartoitus</span><span>${i + 1} / ${SURVEY.questions.length}</span></div>
+        <div class="progress"><span>${esc(UI.surveyLabel)}</span><span>${i + 1} / ${SURVEY.questions.length}</span></div>
         <div class="bar"><div style="width:${(i / SURVEY.questions.length) * 100}%"></div></div>
         <p class="question">${esc(q.q)}</p>
         <div class="options">
@@ -114,18 +150,22 @@
       .sort((a, b) => b.points - a.points).map((a) => a.reason);
     state.survey = { score, reasons };
     save();
+    showSurveyResult();
+  }
+
+  function showSurveyResult() {
     const level = surveyLevel();
     render(`
       <div class="panel">
-        <p class="eyebrow">Tarvekartoituksen tulos</p>
+        <p class="eyebrow">${esc(UI.surveyResult)}</p>
         <h1 class="result-title">${esc(level.title)}</h1>
-        ${meterHtml(score)}
+        ${meterHtml(state.survey.score)}
         <p>${esc(level.text)}</p>
       </div>
       ${reasonsHtml(4)}
-      <button class="btn" id="final">Näytä suositeltu etenemispolku</button>
-      <button class="btn ghost" id="hub">Testaa ISO 27001 -osaamisenne</button>
-    `, { showHome: true });
+      <button class="btn" id="final">${esc(UI.showPath)}</button>
+      <button class="btn ghost" id="hub">${esc(UI.testKnowledge)}</button>
+    `, { showHome: true, screen: showSurveyResult });
     onClick("hub", showHub);
     onClick("final", showFinal);
   }
@@ -136,15 +176,15 @@
 
   function meterHtml(score) {
     const max = SURVEY.questions.reduce((s, q) => s + Math.max(...q.options.map((o) => o.points)), 0);
-    return `<div class="meter" role="img" aria-label="Tarve ${score} / ${max}">
+    return `<div class="meter" role="img" aria-label="${esc(UI.meterAria)} ${score} / ${max}">
       <div style="width:${Math.max(4, (score / max) * 100)}%"></div></div>
-      <div class="meter-scale"><span>Vähäinen</span><span>Kohtalainen</span><span>Suuri</span></div>`;
+      <div class="meter-scale">${UI.meterScale.map((t) => `<span>${esc(t)}</span>`).join("")}</div>`;
   }
 
   function reasonsHtml(max) {
     const keys = state.survey ? state.survey.reasons.slice(0, max) : ["tenders", "data", "growth"];
     return `<section class="block">
-      <h2>Liiketoimintahyödyt ${state.survey ? "teille" : ""}</h2>
+      <h2>${esc(state.survey ? UI.benefitsYou : UI.benefits)}</h2>
       ${keys.map((k) => `<div class="item"><h4>${esc(REASONS[k].title)}</h4><p>${esc(REASONS[k].text)}</p></div>`).join("")}
     </section>`;
   }
@@ -199,11 +239,11 @@
         if (bi === q.correct) b.classList.add("correct");
         else if (bi === idx) b.classList.add("wrong");
       });
-      const title = idx === null ? "Aika päättyi" : ok ? "Oikein" : "Väärin";
+      const title = esc(idx === null ? UI.timeUp : ok ? UI.correct : UI.wrong);
       const last = run.i === order.length - 1;
       byId("fb").innerHTML = `
         <div class="feedback ${ok ? "ok" : "bad"}"><strong>${title}</strong>${esc(q.explain || "")}</div>
-        <button class="btn" id="next">${last ? "Näytä tulos" : "Seuraava"}</button>`;
+        <button class="btn" id="next">${esc(last ? UI.showResult : UI.next)}</button>`;
       onClick("next", () => {
         if (last) finishGame(run);
         else { run.i++; showQuestion(run); }
@@ -229,27 +269,32 @@
     const { game } = run;
     state.results[game.id] = { correct: run.correct, total: game.questions.length, topics: run.topics };
     save();
+    showGameResult(game.id, run.topics);
+  }
+
+  // Pelin tulos; piirretään tallennetusta tilasta, jotta kielen vaihto toimii
+  function showGameResult(id, topics) {
+    const game = GAMES.find((g) => g.id === id);
+    const r = state.results[id];
     const nextGame = GAMES.find((g) => !state.results[g.id]);
     render(`
       <div class="panel">
         <p class="eyebrow">${esc(game.title)}</p>
-        <div class="score">${run.correct} <span>/ ${game.questions.length}</span></div>
-        <p>${esc(knowledgeLevel(run.correct / game.questions.length).text)}</p>
+        <div class="score">${r.correct} <span>/ ${r.total}</span></div>
+        <p>${esc(knowledgeLevel(r.correct / r.total).text)}</p>
       </div>
-      ${topicsHtml(run.topics, 2)}
+      ${topicsHtml(topics, 2)}
       ${!state.survey ? `<button class="btn" id="survey">${esc(SURVEY.title)}</button>` : ""}
-      <button class="btn ${state.survey ? "" : "ghost"}" id="final">Näytä yhteenveto ja suositukset</button>
-      ${nextGame ? `<button class="btn ghost" id="next">Seuraava osio: ${esc(nextGame.title)}</button>` : ""}
-    `, { showHome: true });
+      <button class="btn ${state.survey ? "" : "ghost"}" id="final">${esc(UI.showSummary)}</button>
+      ${nextGame ? `<button class="btn ghost" id="next">${esc(UI.nextSection)} ${esc(nextGame.title)}</button>` : ""}
+    `, { showHome: true, screen: () => showGameResult(id, topics) });
     onClick("survey", () => showSurveyQuestion([], 0));
     onClick("next", () => startGame(nextGame));
     onClick("final", showFinal);
   }
 
   function knowledgeLevel(pct) {
-    if (pct >= 0.85) return { title: "Vahva osaaminen", text: "Organisaatiollanne on hyvät valmiudet. Sertifikaatti tekisi osaamisesta todennettavaa myös asiakkaille." };
-    if (pct >= 0.6) return { title: "Hyvä perusta", text: "Perusteet ovat hallussa. Gap-analyysi osoittaa, mitä sertifiointiin vielä tarvitaan." };
-    return { title: "Kehityskohteita", text: "Tämä on tyypillinen lähtötilanne. Jäsennelty käyttöönotto vie sertifiointiin hallitusti ja ennustettavasti." };
+    return UI.knowledgeLevels.find((l) => pct >= l.min);
   }
 
   // --- Yhteenveto ------------------------------------------------------------
@@ -258,22 +303,22 @@
     const topics = mergeTopics();
     const summary = [];
     if (state.survey) {
-      summary.push(`<div class="stat"><span class="stat-label">Liiketoimintatarve</span><strong>${esc(surveyLevel().title)}</strong></div>`);
+      summary.push(`<div class="stat"><span class="stat-label">${esc(UI.needLabel)}</span><strong>${esc(surveyLevel().title)}</strong></div>`);
     }
     if (results.length) {
       const correct = results.reduce((s, r) => s + r.correct, 0);
       const totalQ = results.reduce((s, r) => s + r.total, 0);
-      summary.push(`<div class="stat"><span class="stat-label">ISO 27001 -osaaminen</span><strong>${esc(knowledgeLevel(correct / totalQ).title)}</strong><span class="stat-sub">${correct}/${totalQ} oikein</span></div>`);
+      summary.push(`<div class="stat"><span class="stat-label">${esc(UI.knowledgeLabel)}</span><strong>${esc(knowledgeLevel(correct / totalQ).title)}</strong><span class="stat-sub">${esc(UI.correctOf(correct, totalQ))}</span></div>`);
     }
     const path = recommendedPath(topics);
     render(`
-      <p class="eyebrow">Yhteenveto${state.company ? ` · ${esc(state.company)}` : ""}</p>
-      <h1>Teidän polkunne ISO 27001 -sertifikaattiin</h1>
+      <p class="eyebrow">${esc(UI.summary)}${state.company ? ` · ${esc(state.company)}` : ""}</p>
+      <h1>${esc(UI.finalTitle)}</h1>
       ${summary.length ? `<div class="stats">${summary.join("")}</div>` : ""}
-      ${!state.survey ? `<button class="btn" id="survey">Tehkää tarvekartoitus tarkempaa suositusta varten</button>` : ""}
+      ${!state.survey ? `<button class="btn" id="survey">${esc(UI.doSurvey)}</button>` : ""}
       ${reasonsHtml(3)}
       <section class="block">
-        <h2>Suositeltu etenemispolku</h2>
+        <h2>${esc(UI.pathTitle)}</h2>
         <ol class="path">
           ${path.map((k) => `<li>${icon(k)}<h4>${esc(SERVICES[k].name)}</h4><p>${esc(SERVICES[k].text)}</p></li>`).join("")}
         </ol>
@@ -282,10 +327,10 @@
         <h2>${esc(CONFIG.talkTitle)}</h2>
         <p>${esc(CONFIG.talkText)}</p>
         <div class="chips">${path.slice(0, 3).map((k) => `<span class="chip">${esc(SERVICES[k].name)}</span>`).join("")}</div>
-        <p class="note">Tavattavissa ${esc(CONFIG.stand)}.</p>
+        <p class="note">${esc(UI.findUs)} ${esc(CONFIG.stand)}.</p>
       </div>
-      ${GAMES.some((g) => !state.results[g.id]) ? `<button class="btn ghost" id="hub">Jatka testejä</button>` : `<button class="btn ghost" id="hub">Takaisin valikkoon</button>`}
-    `, { showHome: true });
+      <button class="btn ghost" id="hub">${esc(GAMES.some((g) => !state.results[g.id]) ? UI.continueTests : UI.backToMenu)}</button>
+    `, { showHome: true, screen: showFinal });
     onClick("survey", () => showSurveyQuestion([], 0));
     onClick("hub", showHub);
   }
@@ -327,12 +372,13 @@
       ? weak.map((k) => {
           const t = TOPICS[k], s = SERVICES[t.service];
           return `<div class="item"><h4>${esc(t.title)}</h4><p>${esc(t.pitch)}</p>
-            <p class="service"><span>Palvelumme</span> ${esc(s.name)}</p></div>`;
+            <p class="service"><span>${esc(UI.ourService)}</span> ${esc(s.name)}</p></div>`;
         }).join("")
-      : `<div class="item"><h4>Osaaminen on vahvaa</h4><p>Sertifikaatti tekee osaamisestanne todennettavaa asiakkaille. Valmiusarviointi osoittaa, kuinka lähellä sertifiointia olette.</p>
-          <p class="service"><span>Palvelumme</span> ${esc(SERVICES.readiness.name)}</p></div>`;
-    return `<section class="block"><h2>Mitä tämä tarkoittaa liiketoiminnallenne</h2>${items}</section>`;
+      : `<div class="item"><h4>${esc(UI.strongTitle)}</h4><p>${esc(UI.strongText)}</p>
+          <p class="service"><span>${esc(UI.ourService)}</span> ${esc(SERVICES.readiness.name)}</p></div>`;
+    return `<section class="block"><h2>${esc(UI.whatItMeans)}</h2>${items}</section>`;
   }
 
-  if (state.company || anyDone()) showHub(); else showStart();
+  if (!CONTENT[state.lang]) { state.lang = null; showLanguage(); }
+  else { setLang(state.lang); if (state.company || anyDone()) showHub(); else showStart(); }
 })();

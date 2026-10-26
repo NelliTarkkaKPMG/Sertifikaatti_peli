@@ -2,7 +2,7 @@
 
 An expo tool for company representatives visiting our stand. It shows **why their company would benefit from ISO 27001 certification** and leads them to our related consulting services, ending in a personalised "recommended path" that our consultants use to start the conversation.
 
-Visitors scan a QR code and get:
+Visitors scan a QR code, choose **Finnish or English**, and get:
 
 | Part | Content |
 |---|---|
@@ -18,8 +18,12 @@ The **summary** shows business need, knowledge level, business benefits, a **num
 
 Nothing is stored or sent anywhere; answers stay in the visitor's browser.
 
+## Languages
+The first screen asks for the language (Suomi / English). The whole game follows that choice, and an FI/EN button in the header switches language on any menu or result screen without losing progress.
+
 ## Editing content
-Everything is in **`questions.js`**:
+Finnish content is in **`content-fi.js`**, English in **`content-en.js`**. Both have the same structure; keep the keys (`id`, `topic`, `service`, `reason`), answer order and `correct` indexes identical in both files. Each file contains:
+- `UI` – all buttons, headings and labels
 - `CONFIG` – stand name and texts
 - `SERVICES` – your consulting services (edit to match your offering)
 - `SURVEY` + `REASONS` – needs assessment and business benefits (each reason points to a service)
