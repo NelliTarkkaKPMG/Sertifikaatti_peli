@@ -10,21 +10,22 @@ const UI = {
   menu: "‹ Menu",
   startEyebrow: "ISO/IEC 27001:2022",
   startTitle: "Is your company ready for ISO 27001 certification?",
-  startLead: "Find out in a few minutes how certification would benefit your business and where your organisation stands today. At the end you get a recommended path forward.",
+  startLead: "Find out in a few minutes how certification would benefit your business and where your organisation stands today – and test your own ISO 27001 knowledge along the way. At the end you get a recommended path forward.",
   companyLabel: "Company name (optional)",
   startBtn: "Start",
   privacy: "Your answers are not stored or sent anywhere.",
   chooseSection: "Choose a section",
   done: "Done",
   recommendStart: "We recommend starting here",
-  testSection: "Test your ISO 27001 knowledge",
+  orgSection: "Your company",
+  testSection: "Test your own ISO 27001 knowledge",
   correctOf: (n, t) => `${n}/${t} correct`,
   showSummary: "Show summary and recommendations",
   restart: "Start over",
   surveyLabel: "Needs assessment",
   surveyResult: "Needs assessment result",
   showPath: "Show recommended path",
-  testKnowledge: "Test your ISO 27001 knowledge",
+  testKnowledge: "Test your own ISO 27001 knowledge",
   meterAria: "Need",
   meterScale: ["Low", "Moderate", "High"],
   benefits: "Business benefits",
@@ -36,12 +37,12 @@ const UI = {
   next: "Next",
   nextSection: "Next section:",
   knowledgeLevels: [
-    { min: 0.85, title: "Strong knowledge", text: "Your organisation is well prepared. Certification would make that expertise verifiable to your customers as well." },
-    { min: 0.6, title: "Good foundation", text: "You have the basics covered. A gap analysis shows what is still needed for certification." },
-    { min: 0, title: "Areas to develop", text: "This is a typical starting point. A structured implementation takes you to certification in a controlled and predictable way." },
+    { min: 0.85, title: "Expert", text: "You know the standard extremely well. An expert like you is the most important asset in an ISO 27001 project – we bring the methods and experience to take it all the way to certification." },
+    { min: 0.6, title: "Solid foundation", text: "You know the basics of the standard well. The few details you missed are exactly the kind that often trip organisations up in audits – that is where we can help." },
+    { min: 0, title: "A good time to dive in", text: "ISO 27001 is not everyday work for everyone – that is why we work with it every day. We are happy to tell you more at our stand." },
   ],
   needLabel: "Business need",
-  knowledgeLabel: "ISO 27001 knowledge",
+  knowledgeLabel: "Your ISO 27001 knowledge",
   summary: "Summary",
   finalTitle: "Your path to ISO 27001 certification",
   doSurvey: "Take the needs assessment for a more precise recommendation",
@@ -51,8 +52,8 @@ const UI = {
   backToMenu: "Back to menu",
   whatItMeans: "What this means for your business",
   ourService: "Our service",
-  strongTitle: "Your knowledge is strong",
-  strongText: "Certification makes your expertise verifiable to customers. A readiness assessment shows how close to certification you already are.",
+  strongTitle: "You know your stuff",
+  strongText: "You know what the standard requires. The next question is how close your organisation is to certification – a readiness assessment will tell.",
   newPlayer: "Done – new player",
   readinessOf: (p) => `Readiness ${p}%`,
   readinessLabel: "Current state",
@@ -73,6 +74,53 @@ const CONFIG = {
 // SERVICES
 // Results point to these. Edit to match your own service offering.
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// OPENING QUESTIONS: asked right after the start screen. ISO 27001 is always the main
+// recommendation; based on these answers ISO 42001 and/or ISO 22301 are added to the summary.
+// "recommend": standard key (STANDARDS), "points" ≥ "threshold" → recommended.
+// ---------------------------------------------------------------------------
+const PROFILE = {
+  eyebrow: "Two questions about your company",
+  threshold: 1,
+  questions: [
+    {
+      id: "ai",
+      recommend: "iso42001",
+      q: "Does your company use artificial intelligence in its products, services or internal operations?",
+      options: [
+        { label: "Yes, extensively", points: 2 },
+        { label: "To some extent, or we are experimenting", points: 1 },
+        { label: "No", points: 0 },
+      ],
+    },
+    {
+      id: "continuity",
+      recommend: "iso22301",
+      q: "How critical is the continuity of your operations? What would happen if your key systems were down for a day?",
+      options: [
+        { label: "Highly critical – the impact would be significant", points: 2 },
+        { label: "Harmful, but we would manage", points: 1 },
+        { label: "No significant impact", points: 0 },
+      ],
+    },
+  ],
+};
+
+// Other management system standards recommended alongside ISO 27001.
+const STANDARDS = {
+  title: "At the same time",
+  lead: "ISO 27001 is our primary recommendation for you. Based on your answers, it is also worth considering these alongside it:",
+  iso42001: {
+    name: "ISO/IEC 42001 – AI management system",
+    text: "When AI is part of your business, ISO 42001 brings managed risks, responsibilities and transparency to its use. It also supports preparing for the EU AI Act and builds on the same foundation as ISO 27001.",
+  },
+  iso22301: {
+    name: "ISO 22301 – business continuity management",
+    text: "When an outage would be critical, ISO 22301 makes sure operations continue through disruptions and recover in a controlled way. Business continuity is also part of the NIS2 requirements, and it complements the ISO 27001 controls.",
+  },
+  iso9001: "Do you already have an ISO 9001 quality management system? ISO 27001, 22301 and 42001 share the same structure, so they can be built into one integrated management system.",
+};
+
 const SERVICES = {
   gap: {
     name: "Gap analysis",
@@ -280,7 +328,7 @@ const GAMES = [
     id: "quiz",
     tag: "Basics · 8 questions",
     title: "ISO 27001 basics",
-    subtitle: "Concepts, structure and certification.",
+    subtitle: "Do you know the concepts, structure and certification?",
     questions: [
       {
         topic: "risk", q: "What does the abbreviation SoA stand for?",
@@ -419,7 +467,7 @@ const GAMES = [
     id: "truefalse",
     tag: "Statements · 10 s each",
     title: "True or false?",
-    subtitle: "Common beliefs about ISO 27001.",
+    subtitle: "Can you tell the facts from common misconceptions?",
     timer: 10,
     fixedOptions: ["True", "False"],
     questions: [
@@ -435,5 +483,5 @@ const GAMES = [
   },
 ];
 
-return { UI, CONFIG, SERVICES, SURVEY, REASONS, TOPICS, GAMES };
+return { UI, CONFIG, PROFILE, STANDARDS, SERVICES, SURVEY, REASONS, TOPICS, GAMES };
 })();

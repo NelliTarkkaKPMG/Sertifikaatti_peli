@@ -170,3 +170,13 @@ h3.section { margin: 18px 0 0; font-size: 13px; text-transform: uppercase; lette
 .strengths { background: var(--ok-soft); border-left: 3px solid var(--ok); border-radius: var(--radius); padding: 14px 16px; }
 .strengths strong { color: var(--ok); }
 .strengths ul { margin: 6px 0 0; padding-left: 20px; line-height: 1.6; }
+
+/* Valikon listaosiot: ikoni vasemmalla, teksti oikealla */
+.list { display: grid; gap: 10px; }
+.list .tile { display: grid; grid-template-columns: 44px 1fr; column-gap: 14px; align-items: start; }
+.list .tile .ico { grid-row: 1 / span 4; margin: 2px 0 0; }
+.list .tile > :not(.ico) { grid-column: 2; }
+
+/* Muut standardit */
+.item.std { border-left: 3px solid var(--purple); }
+.note-box { background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius); padding: 12px 14px; color: var(--muted); font-size: 14px; }

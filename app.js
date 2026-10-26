@@ -19,16 +19,16 @@
   const KIOSK = new URLSearchParams(location.search).has("kiosk");
   const KIOSK_IDLE_MS = 3 * 60 * 1000;
 
-  const fresh = (lang = null) => ({ lang, company: "", results: {}, survey: null });
+  const fresh = (lang = null) => ({ lang, company: "", profile: {}, results: {}, survey: null });
   let state = load();
   let timerId = null;
   let currentScreen = null;
   // Valitun kielen sisältö (content-fi.js / content-en.js)
-  let UI, CONFIG, SERVICES, SURVEY, REASONS, TOPICS, GAMES;
+  let UI, CONFIG, PROFILE, STANDARDS, SERVICES, SURVEY, REASONS, TOPICS, GAMES;
 
   function setLang(lang) {
     state.lang = lang;
-    ({ UI, CONFIG, SERVICES, SURVEY, REASONS, TOPICS, GAMES } = CONTENT[lang]);
+    ({ UI, CONFIG, PROFILE, STANDARDS, SERVICES, SURVEY, REASONS, TOPICS, GAMES } = CONTENT[lang]);
     document.documentElement.lang = lang;
     document.title = CONFIG.brand;
     byId("brand").textContent = CONFIG.brand;
@@ -107,14 +107,42 @@
     onClick("go", () => {
       state.company = byId("company").value.trim();
       save();
-      showHub();
+      showProfileQuestion(0);
     });
+  }
+
+  // --- Alkukysymykset (tekoäly, jatkuvuus) ----------------------------------
+  function showProfileQuestion(i) {
+    const q = PROFILE.questions[i];
+    render(`
+      <div class="panel">
+        <div class="progress"><span>${esc(PROFILE.eyebrow)}</span><span>${i + 1} / ${PROFILE.questions.length}</span></div>
+        <div class="bar"><div style="width:${(i / PROFILE.questions.length) * 100}%"></div></div>
+        <p class="question">${esc(q.q)}</p>
+        <div class="options">
+          ${q.options.map((o, idx) => `<button class="opt" data-idx="${idx}">${esc(o.label)}</button>`).join("")}
+        </div>
+      </div>
+    `);
+    app.querySelectorAll(".opt").forEach((b) => b.onclick = () => {
+      state.profile = Object.assign({}, state.profile, { [q.id]: q.options[Number(b.dataset.idx)].points });
+      save();
+      if (i + 1 < PROFILE.questions.length) showProfileQuestion(i + 1);
+      else showHub();
+    });
+  }
+
+  // ISO 27001:n rinnalle suositeltavat standardit alkukysymysten perusteella
+  function extraStandards() {
+    return PROFILE.questions
+      .filter((q) => (state.profile || {})[q.id] >= PROFILE.threshold)
+      .map((q) => q.recommend);
   }
 
   // --- Valikko ---------------------------------------------------------------
   function showHub() {
     const status = (done, text) => done ? `<span class="status done">${text}</span>` : "";
-    const cards = GAMES.map((g) => {
+    const tile = (g) => {
       const r = state.results[g.id];
       return `<button class="tile" data-id="${g.id}">
         ${icon(g.id)}
@@ -123,10 +151,13 @@
         <span class="tile-sub">${esc(g.subtitle)}</span>
         ${status(r, r ? (g.type === "checklist" ? UI.readinessOf(readinessPct(r)) : UI.correctOf(r.correct, g.questions.length)) : "")}
       </button>`;
-    }).join("");
+    };
+    const orgGames = GAMES.filter((g) => g.type === "checklist").map(tile).join("");
+    const quizzes = GAMES.filter((g) => g.type !== "checklist").map(tile).join("");
     render(`
       ${state.company ? `<p class="eyebrow">${esc(state.company)}</p>` : ""}
       <h2>${esc(UI.chooseSection)}</h2>
+      <h3 class="section">${esc(UI.orgSection)}</h3>
       <button class="tile featured" id="surveyCard">
         ${icon("survey")}
         <span class="tag">${esc(SURVEY.tag)}</span>
@@ -134,8 +165,9 @@
         <span class="tile-sub">${esc(SURVEY.subtitle)}</span>
         ${state.survey ? status(true, esc(UI.done)) : `<span class="status">${esc(UI.recommendStart)}</span>`}
       </button>
+      <div class="list">${orgGames}</div>
       <h3 class="section">${esc(UI.testSection)}</h3>
-      <div class="grid">${cards}</div>
+      <div class="list">${quizzes}</div>
       ${anyDone() ? `<button class="btn" id="final">${esc(UI.showSummary)}</button>
         <button class="btn ghost" id="reset">${esc(UI.restart)}</button>` : ""}
     `, { screen: showHub });
@@ -409,6 +441,7 @@
       summary.push(`<div class="stat"><span class="stat-label">${esc(UI.knowledgeLabel)}</span><strong>${esc(knowledgeLevel(correct / totalQ).title)}</strong><span class="stat-sub">${esc(UI.correctOf(correct, totalQ))}</span></div>`);
     }
     const path = recommendedPath(topics);
+    const standards = extraStandards();
     render(`
       <p class="eyebrow">${esc(UI.summary)}${state.company ? ` · ${esc(state.company)}` : ""}</p>
       <h1>${esc(UI.finalTitle)}</h1>
@@ -421,10 +454,18 @@
           ${path.map((k) => `<li>${icon(k)}<h4>${esc(SERVICES[k].name)}</h4><p>${esc(SERVICES[k].text)}</p></li>`).join("")}
         </ol>
       </section>
+      ${standards.length ? `<section class="block">
+        <h2>${esc(STANDARDS.title)}</h2>
+        <p class="lead">${esc(STANDARDS.lead)}</p>
+        ${standards.map((k) => `<div class="item std"><h4>${esc(STANDARDS[k].name)}</h4><p>${esc(STANDARDS[k].text)}</p></div>`).join("")}
+      </section>` : ""}
+      <p class="note-box">${esc(STANDARDS.iso9001)}</p>
       <div class="talkbox">
         <h2>${esc(CONFIG.talkTitle)}</h2>
         <p>${esc(CONFIG.talkText)}</p>
-        <div class="chips">${path.slice(0, 3).map((k) => `<span class="chip">${esc(SERVICES[k].name)}</span>`).join("")}</div>
+        <div class="chips">${path.slice(0, 3).map((k) => esc(SERVICES[k].name))
+          .concat(standards.map((k) => esc(STANDARDS[k].name.split(" – ")[0])))
+          .map((t) => `<span class="chip">${t}</span>`).join("")}</div>
         <p class="note">${esc(UI.findUs)} ${esc(CONFIG.stand)}.</p>
       </div>
       <button class="btn ghost" id="hub">${esc(GAMES.some((g) => !state.results[g.id]) ? UI.continueTests : UI.backToMenu)}</button>

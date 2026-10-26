@@ -10,21 +10,22 @@ const UI = {
   menu: "‹ Valikko",
   startEyebrow: "ISO/IEC 27001:2022",
   startTitle: "Onko yrityksenne valmis ISO 27001 -sertifiointiin?",
-  startLead: "Selvittäkää muutamassa minuutissa, mitä hyötyä sertifikaatista olisi liiketoiminnallenne ja missä vaiheessa organisaationne on. Saatte lopuksi suositellun etenemispolun.",
+  startLead: "Selvittäkää muutamassa minuutissa, mitä hyötyä sertifikaatista olisi liiketoiminnallenne ja missä vaiheessa organisaationne on – ja testaa samalla omat ISO 27001 -tietosi. Saatte lopuksi suositellun etenemispolun.",
   companyLabel: "Yrityksen nimi (vapaaehtoinen)",
   startBtn: "Aloita",
   privacy: "Vastauksia ei tallenneta eikä lähetetä minnekään.",
   chooseSection: "Valitkaa osio",
   done: "Tehty",
   recommendStart: "Suosittelemme aloittamaan tästä",
-  testSection: "Testatkaa ISO 27001 -osaamisenne",
+  orgSection: "Yrityksenne",
+  testSection: "Testaa oma ISO 27001 -osaamisesi",
   correctOf: (n, t) => `${n}/${t} oikein`,
   showSummary: "Näytä yhteenveto ja suositukset",
   restart: "Aloita alusta",
   surveyLabel: "Tarvekartoitus",
   surveyResult: "Tarvekartoituksen tulos",
   showPath: "Näytä suositeltu etenemispolku",
-  testKnowledge: "Testaa ISO 27001 -osaamisenne",
+  testKnowledge: "Testaa oma ISO 27001 -osaamisesi",
   meterAria: "Tarve",
   meterScale: ["Vähäinen", "Kohtalainen", "Suuri"],
   benefits: "Liiketoimintahyödyt",
@@ -36,12 +37,12 @@ const UI = {
   next: "Seuraava",
   nextSection: "Seuraava osio:",
   knowledgeLevels: [
-    { min: 0.85, title: "Vahva osaaminen", text: "Organisaatiollanne on hyvät valmiudet. Sertifikaatti tekisi osaamisesta todennettavaa myös asiakkaille." },
-    { min: 0.6, title: "Hyvä perusta", text: "Perusteet ovat hallussa. Gap-analyysi osoittaa, mitä sertifiointiin vielä tarvitaan." },
-    { min: 0, title: "Kehityskohteita", text: "Tämä on tyypillinen lähtötilanne. Jäsennelty käyttöönotto vie sertifiointiin hallitusti ja ennustettavasti." },
+    { min: 0.85, title: "Asiantuntija", text: "Tunnet standardin erinomaisesti. Sinunlaisesi osaaja on ISO 27001 -projektin tärkein voimavara – me tuomme rinnalle menetelmät ja kokemuksen sertifiointiin asti." },
+    { min: 0.6, title: "Hyvä perustietämys", text: "Tunnet standardin perusteet hyvin. Muutamat yksityiskohdat ovat juuri niitä, joihin auditoinneissa usein kompastutaan – niissä voimme auttaa." },
+    { min: 0, title: "Hyvä hetki perehtyä", text: "ISO 27001 ei ole kaikille arkipäivää – siksi teemme sen kanssa töitä päivittäin. Kerromme mielellämme lisää osastollamme." },
   ],
   needLabel: "Liiketoimintatarve",
-  knowledgeLabel: "ISO 27001 -osaaminen",
+  knowledgeLabel: "Oma ISO 27001 -osaamisesi",
   summary: "Yhteenveto",
   finalTitle: "Teidän polkunne ISO 27001 -sertifikaattiin",
   doSurvey: "Tehkää tarvekartoitus tarkempaa suositusta varten",
@@ -51,8 +52,8 @@ const UI = {
   backToMenu: "Takaisin valikkoon",
   whatItMeans: "Mitä tämä tarkoittaa liiketoiminnallenne",
   ourService: "Palvelumme",
-  strongTitle: "Osaaminen on vahvaa",
-  strongText: "Sertifikaatti tekee osaamisestanne todennettavaa asiakkaille. Valmiusarviointi osoittaa, kuinka lähellä sertifiointia olette.",
+  strongTitle: "Tunnet aiheen hyvin",
+  strongText: "Tiedät, mitä standardi vaatii. Seuraava kysymys on, kuinka lähellä organisaationne on sertifiointia – sen kertoo valmiusarviointi.",
   newPlayer: "Valmis – uusi pelaaja",
   readinessOf: (p) => `Valmiusaste ${p} %`,
   readinessLabel: "Nykytila",
@@ -73,6 +74,53 @@ const CONFIG = {
 // PALVELUT
 // Tulokset ohjaavat näihin. Muokkaa vastaamaan omaa palveluvalikoimaanne.
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// ALKUKYSYMYKSET: kysytään heti aloituksen jälkeen. ISO 27001 on aina pääsuositus;
+// näiden vastausten perusteella yhteenvetoon nostetaan lisäksi ISO 42001 ja/tai ISO 22301.
+// "recommend": standardin avain (STANDARDS), "points" ≥ "threshold" → suositellaan.
+// ---------------------------------------------------------------------------
+const PROFILE = {
+  eyebrow: "Kaksi kysymystä yrityksestänne",
+  threshold: 1,
+  questions: [
+    {
+      id: "ai",
+      recommend: "iso42001",
+      q: "Hyödyntääkö yrityksenne tekoälyä tuotteissa, palveluissa tai sisäisessä toiminnassa?",
+      options: [
+        { label: "Kyllä, laajasti", points: 2 },
+        { label: "Jonkin verran tai kokeilemme", points: 1 },
+        { label: "Ei", points: 0 },
+      ],
+    },
+    {
+      id: "continuity",
+      recommend: "iso22301",
+      q: "Kuinka kriittistä toimintanne jatkuvuus on? Mitä tapahtuisi, jos keskeiset järjestelmät olisivat poissa käytöstä päivän?",
+      options: [
+        { label: "Erittäin kriittistä – vaikutus olisi merkittävä", points: 2 },
+        { label: "Haitallista, mutta selviäisimme", points: 1 },
+        { label: "Ei merkittävää vaikutusta", points: 0 },
+      ],
+    },
+  ],
+};
+
+// Muut johtamisjärjestelmästandardit, jotka nostetaan ISO 27001:n rinnalle.
+const STANDARDS = {
+  title: "Samalla kertaa",
+  lead: "ISO 27001 on teille ensisijainen suositus. Vastaustenne perusteella sen rinnalle kannattaa harkita myös näitä:",
+  iso42001: {
+    name: "ISO/IEC 42001 – tekoälyn hallintajärjestelmä",
+    text: "Kun tekoäly on osa liiketoimintaa, ISO 42001 tuo sen käyttöön hallitut riskit, vastuut ja läpinäkyvyyden. Se tukee myös EU:n tekoälysäädöksen vaatimuksiin valmistautumista ja rakentuu samalle pohjalle kuin ISO 27001.",
+  },
+  iso22301: {
+    name: "ISO 22301 – liiketoiminnan jatkuvuuden hallinta",
+    text: "Kun katkos olisi kriittinen, ISO 22301 varmistaa, että toiminta jatkuu häiriöissä ja palautuu hallitusti. Jatkuvuudenhallinta on myös osa NIS2:n vaatimuksia, ja se täydentää ISO 27001:n kontrolleja.",
+  },
+  iso9001: "Onko teillä jo ISO 9001 -laatujärjestelmä? ISO 27001, 22301 ja 42001 noudattavat samaa rakennetta, joten ne voidaan rakentaa yhdeksi integroiduksi johtamisjärjestelmäksi.",
+};
+
 const SERVICES = {
   gap: {
     name: "Gap-analyysi",
@@ -281,7 +329,7 @@ const GAMES = [
     id: "quiz",
     tag: "Perusteet · 8 kysymystä",
     title: "ISO 27001:n perusteet",
-    subtitle: "Käsitteet, rakenne ja sertifiointi.",
+    subtitle: "Tunnetko käsitteet, rakenteen ja sertifioinnin?",
     questions: [
       {
         topic: "risk", q: "Mistä sanoista lyhenne SoA tulee?",
@@ -337,7 +385,7 @@ const GAMES = [
     id: "auditor",
     tag: "Lausekkeet 4–10 · 7 kysymystä",
     title: "Auditoijan näkökulma",
-    subtitle: "Tunnistatteko, mihin vaatimukseen havainto liittyy?",
+    subtitle: "Tunnistatko, mihin vaatimukseen havainto liittyy?",
     questions: [
       {
         topic: "internal_audit", q: "Mikä lauseke on kokemuksemme mukaan yleisin poikkeamien lähde sertifiointiauditoinneissa?",
@@ -420,7 +468,7 @@ const GAMES = [
     id: "truefalse",
     tag: "Väittämät · 10 s / kysymys",
     title: "Pitääkö paikkansa?",
-    subtitle: "Yleisiä käsityksiä ISO 27001:stä.",
+    subtitle: "Erotatko faktat yleisistä harhaluuloista?",
     timer: 10,
     fixedOptions: ["Pitää paikkansa", "Ei pidä paikkaansa"],
     questions: [
@@ -436,5 +484,5 @@ const GAMES = [
   },
 ];
 
-return { UI, CONFIG, SERVICES, SURVEY, REASONS, TOPICS, GAMES };
+return { UI, CONFIG, PROFILE, STANDARDS, SERVICES, SURVEY, REASONS, TOPICS, GAMES };
 })();

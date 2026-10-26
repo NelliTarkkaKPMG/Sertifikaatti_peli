@@ -2,7 +2,9 @@
 
 An expo tool for company representatives visiting our stand. It shows **why their company would benefit from ISO 27001 certification** and leads them to our related consulting services, ending in a personalised "recommended path" that our consultants use to start the conversation.
 
-Visitors scan a QR code, choose **Finnish or English**, and get:
+Visitors scan a QR code, choose **Finnish or English**, enter their company name (optional) and answer **two opening questions** (use of AI, how critical continuity is). ISO 27001 is always the main recommendation; if they use AI, **ISO/IEC 42001** is added alongside it, and if continuity is critical, **ISO 22301** is added. ISO 9001 is mentioned as part of an integrated management system.
+
+The menu has two sections: **Yrityksenne** (about the organisation: needs assessment and the "Onko teillä…?" checklist) and **Testaa oma osaamisesi** (quizzes that test the visitor's own knowledge, with a personal result).
 
 | Part | Content |
 |---|---|
@@ -24,6 +26,7 @@ The first screen asks for the language (Suomi / English). The whole game follows
 ## Editing content
 Finnish content is in **`content-fi.js`**, English in **`content-en.js`**. Both have the same structure; keep the keys (`id`, `topic`, `service`, `reason`), answer order and `correct` indexes identical in both files. Each file contains:
 - `UI` – all buttons, headings and labels
+- `PROFILE` + `STANDARDS` – the two opening questions and the ISO 42001 / 22301 / 9001 texts
 - `CONFIG` – stand name and texts
 - `SERVICES` – your consulting services (edit to match your offering)
 - `SURVEY` + `REASONS` – needs assessment and business benefits (each reason points to a service)
