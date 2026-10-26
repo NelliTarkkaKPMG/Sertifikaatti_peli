@@ -10,13 +10,13 @@ const UI = {
   menu: "‹ Menu",
   startEyebrow: "ISO/IEC 27001:2022",
   startTitle: "Is your company ready for ISO 27001 certification?",
-  startLead: "Find out in a few minutes how certification would benefit your business and where your organisation stands today. You can also test your own ISO 27001 knowledge along the way. At the end you get a recommended path forward.",
+  startLead: "Find out in a few minutes what certification could do for your business and where you stand today. You can also test how well you know ISO 27001 yourself. At the end, you get our suggestion for how to proceed.",
   companyLabel: "Company name (optional)",
   startBtn: "Start",
   privacy: "Your answers are not stored or sent anywhere.",
   chooseSection: "Choose a section",
   done: "Done",
-  recommendStart: "We recommend starting here",
+  recommendStart: "Start here",
   orgSection: "Your company",
   testSection: "Test your own ISO 27001 knowledge",
   correctOf: (n, t) => `${n}/${t} correct`,
@@ -24,40 +24,40 @@ const UI = {
   restart: "Start over",
   surveyLabel: "Needs assessment",
   surveyResult: "Needs assessment result",
-  showPath: "Show recommended path",
+  showPath: "See our suggestion",
   testKnowledge: "Test your own ISO 27001 knowledge",
   meterAria: "Need",
   meterScale: ["Low", "Moderate", "High"],
-  benefits: "Business benefits",
-  benefitsYou: "Business benefits for you",
-  timeUp: "Time's up. Here is the right answer",
+  benefits: "Why certification pays off",
+  benefitsYou: "Why certification would pay off for you",
+  timeUp: "Time's up. The right answer is shown in green.",
   correct: "Correct",
   wrong: "Good try. The right answer is shown in green.",
   showResult: "Show result",
   next: "Next",
   nextSection: "Next section:",
   knowledgeLevels: [
-    { min: 0.85, title: "Excellent result", text: "You know the standard well. Knowledge like this is a real asset when a company prepares for certification." },
-    { min: 0.5, title: "Good result", text: "You have the basics covered, and the explanations may have shown you a detail or two. They are useful in practice too." },
+    { min: 0.85, title: "Excellent result", text: "You know the standard well. That knowledge is very useful when a company prepares for certification." },
+    { min: 0.5, title: "Good result", text: "You have the basics covered, and the explanations may have taught you a detail or two that come in handy in practice." },
     { min: 0, title: "Good start", text: "Thanks for taking part. Some of the questions were tricky, and the explanations show the right answers. Our experts are happy to tell you more." },
   ],
   needLabel: "Business need",
   knowledgeLabel: "Your ISO 27001 knowledge",
   summary: "Summary",
-  finalTitle: "Your path to ISO 27001 certification",
-  doSurvey: "Take the needs assessment for a more precise recommendation",
-  pathTitle: "Recommended path",
+  finalTitle: "Getting to ISO 27001 certification",
+  doSurvey: "Take the needs assessment to get a more specific recommendation",
+  pathTitle: "What we would suggest",
   findUs: "Find us",
   continueTests: "Continue tests",
   backToMenu: "Back to menu",
   whatItMeans: "Good to know",
   ourService: "Our service",
-  strongTitle: "You know your stuff",
-  strongText: "You know what the standard requires. The next question is how close your organisation is to certification. A readiness assessment will tell.",
+  strongTitle: "You know the subject well",
+  strongText: "You know what the standard requires. A readiness assessment shows how close your company is to certification.",
   newPlayer: "New player",
   readinessOf: (p) => `Readiness ${p}%`,
   readinessLabel: "Current state",
-  gapsTitle: "Next steps",
+  gapsTitle: "Where to go from here",
   inPlaceTitle: "Already in place",
 };
 
@@ -66,8 +66,8 @@ const CONFIG = {
   // Stand name/number, e.g. "at stand B12"
   stand: "at our stand",
   // Talk box at the end of the summary: the visitor shows the screen to a consultant
-  talkTitle: "Let's discuss your situation",
-  talkText: "Show this summary to our consultant. We will go through your current situation and estimate what certification would require for you and how quickly you could realistically get there.",
+  talkTitle: "Let's talk about your situation",
+  talkText: "Show this summary to our consultant. Together we'll go through where you are now, what certification would take and how quickly you could get there.",
 };
 
 // ---------------------------------------------------------------------------
@@ -86,7 +86,7 @@ const PROFILE = {
     {
       id: "ai",
       recommend: "iso42001",
-      q: "Does your company use artificial intelligence in its products, services or internal operations?",
+      q: "Does your company use AI in its products, services or internal work?",
       options: [
         { label: "Yes, extensively", points: 2 },
         { label: "To some extent, or we are experimenting", points: 1 },
@@ -96,11 +96,11 @@ const PROFILE = {
     {
       id: "continuity",
       recommend: "iso22301",
-      q: "How critical is the continuity of your operations? What would happen if your key systems were down for a day?",
+      q: "What would happen if your most important systems were down for 24 hours?",
       options: [
-        { label: "Highly critical, the impact would be significant", points: 2 },
+        { label: "The impact would be serious", points: 2 },
         { label: "Harmful, but we would manage", points: 1 },
-        { label: "No significant impact", points: 0 },
+        { label: "Little impact", points: 0 },
       ],
     },
   ],
@@ -108,45 +108,45 @@ const PROFILE = {
 
 // Other management system standards recommended alongside ISO 27001.
 const STANDARDS = {
-  title: "At the same time",
-  lead: "ISO 27001 is our primary recommendation for you. Based on your answers, it is also worth considering these alongside it:",
+  title: "These could also suit you",
+  lead: "Our main recommendation is ISO 27001. Based on your answers, these would also fit alongside it:",
   iso42001: {
     code: "ISO/IEC 42001",
     name: "ISO/IEC 42001: AI management system",
-    text: "When AI is part of your business, ISO 42001 brings managed risks, responsibilities and transparency to its use. It also supports preparing for the EU AI Act and builds on the same foundation as ISO 27001.",
+    text: "When AI is part of your business, ISO 42001 helps you manage its risks and agree on who is responsible for what. It also helps you prepare for the EU AI Act, and it builds on the same foundation as ISO 27001.",
   },
   iso22301: {
     code: "ISO 22301",
     name: "ISO 22301: business continuity management",
-    text: "When an outage would be critical, ISO 22301 makes sure operations continue through disruptions and recover in a controlled way. Business continuity is also part of the NIS2 requirements, and it complements the ISO 27001 controls.",
+    text: "ISO 22301 helps you prepare for disruptions so that operations keep running and recover in a controlled way. Business continuity is also part of NIS2, and it complements the ISO 27001 controls.",
   },
-  iso9001: "Do you already have an ISO 9001 quality management system? ISO 27001, 22301 and 42001 share the same structure, so they can be built into one integrated management system.",
+  iso9001: "Do you already have an ISO 9001 quality management system? ISO 27001, 22301 and 42001 share the same structure, so they are easy to combine into one management system.",
 };
 
 const SERVICES = {
   gap: {
     name: "Gap analysis",
-    text: "We map your current state against the requirements of ISO 27001 and the Annex A controls. The result is a prioritised action plan and a realistic timeline to certification.",
+    text: "We check how your current practices match the requirements of ISO 27001 and the Annex A controls. You get a prioritised action list and a realistic timeline to certification.",
   },
   implementation: {
     name: "ISMS implementation",
-    text: "We build your information security management system with you: policies, processes and documentation sized to your organisation and its risks.",
+    text: "We build your information security management system with you. Policies, processes and documents are sized to your company and its risks.",
   },
   risk: {
     name: "Risk assessment and SoA",
-    text: "We facilitate the risk assessment and prepare a Statement of Applicability that justifies your control choices and stands up to an auditor's review.",
+    text: "We run a risk assessment workshop and prepare a Statement of Applicability (SoA) that justifies your choice of controls and stands up to an auditor's review.",
   },
   training: {
     name: "Management and staff training",
-    text: "Information security training for management and staff, plus documented evidence of competence for the audit.",
+    text: "We train management and staff in information security and document their competence for the audit.",
   },
   internal_audit: {
     name: "Internal audit",
-    text: "We carry out an independent internal audit or train your own internal auditors.",
+    text: "We do an independent internal audit or train your own internal auditors.",
   },
   readiness: {
     name: "Certification readiness assessment",
-    text: "A pre-audit that simulates the certification audit and makes sure there are no surprises in the real one.",
+    text: "A pre-audit covers the same ground as the certification audit, so there are no surprises in the real one.",
   },
   nis2: {
     name: "NIS2 compliance",
@@ -154,7 +154,7 @@ const SERVICES = {
   },
   continuous: {
     name: "Ongoing support",
-    text: "Support after certification: metrics, management reviews, preparing for surveillance audits and, if needed, an outsourced information security manager.",
+    text: "We also support you after certification with metrics, management reviews and preparing for the annual audits. If needed, we can act as your outsourced information security manager.",
   },
 };
 
@@ -177,15 +177,15 @@ const SURVEY = {
       ],
     },
     {
-      q: "Does your company handle confidential information of customers or individuals?",
+      q: "Does your company handle confidential customer or personal data?",
       options: [
-        { label: "To a significant extent", points: 2, reason: "data" },
-        { label: "To some extent", points: 1, reason: "data" },
+        { label: "A lot", points: 2, reason: "data" },
+        { label: "Some", points: 1, reason: "data" },
         { label: "Very little", points: 0 },
       ],
     },
     {
-      q: "Are your company or your customers in scope of NIS2 (the Finnish Cybersecurity Act)?",
+      q: "Does NIS2 (the Finnish Cybersecurity Act) apply to your company or your customers?",
       options: [
         { label: "Yes", points: 2, reason: "nis2" },
         { label: "We are not sure", points: 1, reason: "nis2" },
@@ -221,7 +221,7 @@ const SURVEY = {
       options: [
         { label: "Not really", points: 2, reason: "structure" },
         { label: "Partly", points: 1, reason: "structure" },
-        { label: "Comprehensively", points: 0, reason: "ready" },
+        { label: "Yes, thoroughly", points: 0, reason: "ready" },
       ],
     },
   ],
@@ -229,20 +229,20 @@ const SURVEY = {
   levels: [
     { min: 9, title: "Clear business need", text: "Certification would bring you direct business benefits, and your customers are likely to require it within the next few years." },
     { min: 5, title: "Significant benefit", text: "Certification would strengthen your competitive position and reduce the work spent on customers' security questionnaires." },
-    { min: 0, title: "Strategic advantage", text: "You have a good opportunity to move forward at your own pace. Work started early is the most cost-effective and builds a competitive edge." },
+    { min: 0, title: "Strategic advantage", text: "You can move forward at your own pace. Starting early keeps costs down and gives you an edge over competitors." },
   ],
 };
 
 // Business reasons. "service" tells which service the reason points to.
 const REASONS = {
   tenders: {
-    title: "Competitiveness in tenders",
-    text: "More and more customers and public procurements require evidence of information security. A certificate answers that requirement once and reduces the work spent on individual security questionnaires.",
+    title: "Winning more tenders",
+    text: "More and more customers and public tenders ask for proof of information security. A certificate answers that once and for all and cuts the time spent on individual security questionnaires.",
     service: "readiness",
   },
   data: {
     title: "Customer trust",
-    text: "When you handle other people's information, a certificate shows independently that it is properly protected. It also supports meeting data protection obligations.",
+    text: "When you handle other people's data, a certificate is independent proof that it is properly protected. It also helps you meet data protection obligations.",
     service: "risk",
   },
   nis2: {
@@ -257,22 +257,22 @@ const REASONS = {
   },
   incident: {
     title: "Preventing disruptions",
-    text: "Systematic risk management and incident handling mean problems are detected earlier and recovery is faster.",
+    text: "With systematic risk management and incident handling, problems are spotted earlier and you recover faster.",
     service: "gap",
   },
   growth: {
-    title: "An enabler of growth",
-    text: "An internationally recognised certificate opens doors to larger customers and new markets.",
+    title: "Easier growth",
+    text: "An internationally recognised certificate makes it easier to win larger customers and enter new markets.",
     service: "gap",
   },
   structure: {
     title: "Clear responsibilities and practices",
-    text: "A management system turns information security into managed activity that does not depend on individual people.",
+    text: "When responsibilities and practices are agreed, security no longer depends on what individual people remember.",
     service: "implementation",
   },
   ready: {
     title: "A strong starting point",
-    text: "With documented practices, certification is often a shorter step than expected. A readiness assessment shows the remaining gaps.",
+    text: "When your practices are already documented, certification is often closer than you would think. A readiness assessment shows what is still missing.",
     service: "readiness",
   },
 };
@@ -285,7 +285,7 @@ const REASONS = {
 const TOPICS = {
   internal_audit: {
     title: "Internal audit",
-    pitch: "A well-run internal audit (9.2) is one of the best ways to ensure a smooth certification. It brings improvement ideas to light early and on your own terms.",
+    pitch: "A well-run internal audit (9.2) makes certification go smoothly. Areas to improve show up early, and you can fix them at your own pace.",
     service: "internal_audit",
   },
   risk: {
@@ -295,17 +295,17 @@ const TOPICS = {
   },
   controls: {
     title: "Annex A controls",
-    pitch: "The 93 controls cover everything from remote working to cloud services and secure development. Most organisations already have some of them in place.",
+    pitch: "The 93 controls in Annex A cover everything from remote working to cloud services and secure development. Most companies already have some of them in place.",
     service: "gap",
   },
   management: {
     title: "Management responsibility",
-    pitch: "ISO 27001 makes information security a management tool rather than just an IT matter. It also supports management with its NIS2 obligations.",
+    pitch: "ISO 27001 makes information security a management tool rather than just an IT matter. It also helps management meet its NIS2 obligations.",
     service: "training",
   },
   awareness: {
     title: "Staff competence",
-    pitch: "Skilled staff are an organisation's strongest security asset. The standard supports regular training and makes that competence visible.",
+    pitch: "Information security is largely about people's everyday choices. The standard requires regular training, and competence is documented.",
     service: "training",
   },
   improvement: {
@@ -320,7 +320,7 @@ const TOPICS = {
   },
   basics: {
     title: "ISMS basics",
-    pitch: "A correctly sized management system is lightweight and supports the business day to day, at exactly your scale.",
+    pitch: "A management system does not have to be heavy. Sized to your company, it supports everyday work.",
     service: "implementation",
   },
 };
@@ -398,7 +398,7 @@ const GAMES = [
         topic: "internal_audit", q: "Finding: The internal auditor audits processes they wrote themselves.",
         options: ["7.2 Competence", "9.2 Internal audit", "9.3 Management review", "5.3 Roles and responsibilities"],
         correct: 1,
-        explain: "9.2 requires auditors to be selected and audits to be conducted objectively and impartially.",
+        explain: "9.2 requires auditors to be chosen, and audits done, impartially.",
       },
       {
         topic: "risk", q: "Finding: Annex A controls have been excluded without documented justification.",
@@ -410,7 +410,7 @@ const GAMES = [
         topic: "management", q: "Finding: Management has not reviewed the performance of the management system or the audit results.",
         options: ["9.1 Monitoring and measurement", "9.3 Management review", "5.2 Policy", "7.4 Communication"],
         correct: 1,
-        explain: "Inputs to management review include audit results, nonconformities and the fulfilment of objectives.",
+        explain: "Management review must cover, among other things, audit results, nonconformities and whether objectives were met.",
       },
       {
         topic: "awareness", q: "Finding: There is no documented evidence of staff information security training.",
@@ -422,13 +422,13 @@ const GAMES = [
         topic: "improvement", q: "Finding: Corrective actions have been implemented, but their effectiveness has not been evaluated.",
         options: ["6.2 Objectives", "10.2 Nonconformity and corrective action", "9.3 Management review", "7.1 Resources"],
         correct: 1,
-        explain: "10.2 also requires reviewing the effectiveness of the corrective actions taken.",
+        explain: "10.2 also requires you to check whether the corrective actions actually worked.",
       },
       {
-        topic: "improvement", q: "Finding: Information security objectives are written down, but their fulfilment is not monitored.",
+        topic: "improvement", q: "Finding: Information security objectives are written down, but nobody tracks whether they are met.",
         options: ["6.2 Information security objectives", "5.1 Leadership", "8.2 Risk assessment", "4.4 Management system"],
         correct: 0,
-        explain: "Objectives must be measurable where practicable, and their fulfilment must be monitored (6.2).",
+        explain: "Objectives must be measurable where practicable, and progress on them must be monitored (6.2).",
       },
     ],
   },
@@ -453,16 +453,16 @@ const GAMES = [
     ],
     // "short" is shown in the Already in place list, "why" and "service" in the areas to develop
     questions: [
-      { id: "policy", ref: "5.2 · A.5.1", q: "Do you have an information security policy approved by management and communicated to all staff?", short: "Information security policy", why: "A policy gives security work its direction and shows management support. It is a great place to start.", service: "implementation" },
-      { id: "risk", ref: "6.1.2 · 8.2", q: "Have you assessed and documented your information security risks within the last year?", short: "Risk assessment", why: "An up-to-date risk assessment helps you focus security resources where they bring the most benefit.", service: "risk" },
+      { id: "policy", ref: "5.2 · A.5.1", q: "Do you have an information security policy approved by management and communicated to all staff?", short: "Information security policy", why: "A policy gives security work its direction and shows management support. It is a good place to start.", service: "implementation" },
+      { id: "risk", ref: "6.1.2 · 8.2", q: "Have you assessed and documented your information security risks within the last year?", short: "Risk assessment", why: "An up-to-date risk assessment tells you where security time and money are best spent.", service: "risk" },
       { id: "assets", ref: "A.5.9", q: "Do you have an up-to-date inventory of systems, devices and information, with named owners?", short: "Asset inventory", why: "When you know what you have, safeguards land in the right place. The inventory is also the starting point for risk assessment.", service: "gap" },
-      { id: "access", ref: "A.5.15 · A.5.18", q: "Do you grant access rights on a need basis and review them regularly?", short: "Access management", why: "Up-to-date access rights are a simple and effective way to protect information, and an auditor favourite.", service: "gap" },
-      { id: "mfa", ref: "A.8.5", q: "Do you use multi-factor authentication in all critical systems?", short: "Multi-factor authentication", why: "Multi-factor authentication is one of the most cost-effective safeguards: quick to roll out and highly effective.", service: "gap" },
-      { id: "backup", ref: "A.8.13", q: "Have you tested restoring your backups in practice?", short: "Tested backups", why: "A tested restore gives confidence that operations continue smoothly even when something goes wrong.", service: "gap" },
-      { id: "incident", ref: "A.5.24–A.5.26", q: "Do you have an agreed process and named owners for handling security incidents?", short: "Incident handling", why: "An agreed process keeps incidents calm and under control, and helps meet the NIS2 reporting obligations.", service: "nis2" },
-      { id: "suppliers", ref: "A.5.19–A.5.20", q: "Have you set information security requirements for suppliers and cloud services in contracts?", short: "Supplier requirements", why: "Clear requirements in contracts make cooperation safe and predictable across the whole supply chain.", service: "risk" },
-      { id: "training", ref: "7.2–7.3 · A.6.3", q: "Do your staff receive regular information security training, and is participation recorded?", short: "Staff training", why: "Skilled staff are the best security asset, and regular training also creates evidence for the audit.", service: "training" },
-      { id: "audit", ref: "9.2", q: "Have you audited your information security internally or externally within the last year?", short: "Security audit", why: "Regular auditing brings improvement ideas to light early and on your own terms. It is also a natural part of ISO 27001.", service: "internal_audit" },
+      { id: "access", ref: "A.5.15 · A.5.18", q: "Do you grant access rights on a need basis and review them regularly?", short: "Access management", why: "Up-to-date access rights are a simple and effective way to protect information. Auditors almost always check them.", service: "gap" },
+      { id: "mfa", ref: "A.8.5", q: "Do you use multi-factor authentication in all critical systems?", short: "Multi-factor authentication", why: "Multi-factor authentication is cheap and quick to roll out, and it stops most attacks that use phished passwords.", service: "gap" },
+      { id: "backup", ref: "A.8.13", q: "Have you tested restoring your backups in practice?", short: "Tested backups", why: "Once you have tried a restore, you know you can get operations running again quickly after a disruption.", service: "gap" },
+      { id: "incident", ref: "A.5.24–A.5.26", q: "Do you have an agreed process and named owners for handling security incidents?", short: "Incident handling", why: "When the process is agreed in advance, an incident can be handled calmly. It also helps you meet the NIS2 reporting obligation.", service: "nis2" },
+      { id: "suppliers", ref: "A.5.19–A.5.20", q: "Have you set information security requirements for suppliers and cloud services in contracts?", short: "Supplier requirements", why: "When requirements are written into contracts, both sides know what is expected on security.", service: "risk" },
+      { id: "training", ref: "7.2–7.3 · A.6.3", q: "Do your staff receive regular information security training, and is participation recorded?", short: "Staff training", why: "Regular training keeps security in mind day to day, and attendance records double as audit evidence.", service: "training" },
+      { id: "audit", ref: "9.2", q: "Have you audited your information security internally or externally within the last year?", short: "Security audit", why: "Regular audits find areas to improve early, so you can fix them at your own pace. ISO 27001 requires them anyway.", service: "internal_audit" },
     ],
   },
   {
