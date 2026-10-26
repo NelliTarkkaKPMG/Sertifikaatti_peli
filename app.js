@@ -464,6 +464,8 @@
           ${path.map((p) => `<li>${icon(p.key)}<h4>${esc(SERVICES[p.key].name)}</h4>
             <p class="why"><span>${esc(UI.whyLabel)}</span> ${esc(p.why)}</p>
             <p>${esc(SERVICES[p.key].text)}</p></li>`).join("")}
+          <li class="goal">${icon("truefalse")}<p class="goal-label">${esc(UI.goal.label)}</p>
+            <h4>${esc(UI.goal.title)}</h4><p>${esc(UI.goal.text)}</p></li>
         </ol>
       </section>
       ${standards.length ? `<section class="block">
@@ -488,11 +490,12 @@
     onClick("newPlayer", newPlayer);
   }
 
-  // Räätälöity etenemispolku, aina kolme vaihetta. Jokaiselle vaiheelle perustelu ("Miksi teille").
-  // Vaiheiden runko riippuu lähtötilanteesta:
+  // Räätälöity etenemispolku. Jokaiselle vaiheelle perustelu ("Miksi teille"), ja polun päässä
+  // tavoite: ISO 27001 -sertifikaatti (UI.goal). Vaiheiden runko riippuu lähtötilanteesta:
   //   alkuvaihe:      gap-analyysi → ISMS:n käyttöönotto → tärkein tarve
   //   keskivaihe:     gap-analyysi → tärkein tarve → sertifiointivalmius
-  //   lähes valmis:   tärkein tarve → sertifiointivalmius → jatkuva tuki
+  //   lähes valmis:   tärkein tarve → sisäinen auditointi → sertifiointivalmius (lyhyempi, jos tarpeita ei ole)
+  // Jatkuva tuki kuuluu sertifioinnin jälkeiseen aikaan, joten se mainitaan tavoitteen tekstissä.
   // Tarpeet painojärjestyksessä: nykytilan puutteet, tarvekartoituksen syyt, visojen aiheet.
   function recommendedPath(topics) {
     const check = checklistGame() && state.results[checklistGame().id];
@@ -510,10 +513,12 @@
 
     if (ready) {
       const n = topNeed(["readiness", "continuous"]);
-      return [n ? step(n.key, n.why) : step("internal_audit", UI.whyStep.internalAuditReady), step("readiness"), step("continuous")];
+      if (!n) return [step("internal_audit", UI.whyStep.internalAuditReady), step("readiness")];
+      if (n.key === "internal_audit") return [step(n.key, n.why), step("readiness")];
+      return [step(n.key, n.why), step("internal_audit", UI.whyStep.internalAuditRequired), step("readiness")];
     }
     if (early) {
-      const n = topNeed(["gap", "implementation"]);
+      const n = topNeed(["gap", "implementation", "continuous"]);
       return [step("gap", UI.whyStep.gapEarly), step("implementation"), n ? step(n.key, n.why) : step("readiness")];
     }
     const n = topNeed(["gap", "readiness", "continuous"]);

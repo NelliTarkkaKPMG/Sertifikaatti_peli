@@ -13,7 +13,7 @@ const UI = {
   startLead: "Muutamassa minuutissa näette, mitä hyötyä sertifikaatista olisi yrityksellenne ja missä vaiheessa olette nyt. Samalla voit testata, miten hyvin itse tunnet ISO 27001:n. Lopuksi saatte ehdotuksen siitä, miten edetä.",
   companyLabel: "Yrityksen nimi (vapaaehtoinen)",
   startBtn: "Aloita",
-  privacy: "Vastauksia ei tallenneta eikä lähetetä minnekään.",
+  privacy: "Vastauksia ei tallenneta eikä lähetetä minnekään. Testi ei sido teitä mihinkään.",
   chooseSection: "Valitkaa osio",
   done: "Tehty",
   recommendStart: "Aloita tästä",
@@ -59,8 +59,14 @@ const UI = {
     implementation: "Vastaustenne perusteella perusta kannattaa rakentaa kerralla kuntoon.",
     readiness: "Varmistaa, että sertifiointiauditointi sujuu ilman yllätyksiä.",
     internalAuditReady: "Käytäntönne ovat jo pitkällä, joten seuraavaksi ne kannattaa tarkistaa auditoijan silmin.",
+    internalAuditRequired: "ISO 27001 edellyttää sisäistä auditointia ennen sertifiointia.",
     continuous: "Pitää järjestelmän hyödyllisenä myös sertifioinnin jälkeen.",
+  },  goal: {
+    label: "Tavoite",
+    title: "ISO 27001 -sertifikaatti",
+    text: "Akkreditoitu sertifiointielin tekee sertifiointiauditoinnin kahdessa vaiheessa. Autamme valmistautumaan ja tuemme teitä myös sertifioinnin jälkeen.",
   },
+
   findUs: "Tavattavissa",
   continueTests: "Jatka testejä",
   backToMenu: "Takaisin valikkoon",

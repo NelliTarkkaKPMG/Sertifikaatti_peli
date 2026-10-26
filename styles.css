@@ -186,3 +186,10 @@ h3.section { margin: 18px 0 0; font-size: 13px; text-transform: uppercase; lette
 /* Etenemispolun perustelu */
 .path .why { color: var(--dark-blue); font-size: 14px; margin: 2px 0 6px; }
 .path .why span { display: inline-block; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; color: var(--kpmg-blue); background: var(--light-blue); border-radius: 2px; padding: 2px 6px; margin-right: 6px; }
+
+/* Polun päätepiste: sertifikaatti */
+.path li.goal::before { content: "✓"; background: var(--gradient); }
+.path li.goal { padding-bottom: 0; }
+.path li.goal .ico { background: var(--purple); }
+.goal-label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; color: var(--purple); margin: 0 0 2px; }
+.path li.goal h4 { color: var(--kpmg-blue); font-size: 18px; }

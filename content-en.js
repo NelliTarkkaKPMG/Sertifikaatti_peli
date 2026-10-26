@@ -13,7 +13,7 @@ const UI = {
   startLead: "Find out in a few minutes what certification could do for your business and where you stand today. You can also test how well you know ISO 27001 yourself. At the end, you get our suggestion for how to proceed.",
   companyLabel: "Company name (optional)",
   startBtn: "Start",
-  privacy: "Your answers are not stored or sent anywhere.",
+  privacy: "Your answers are not stored or sent anywhere. Taking the test does not commit you to anything.",
   chooseSection: "Choose a section",
   done: "Done",
   recommendStart: "Start here",
@@ -59,8 +59,14 @@ const UI = {
     implementation: "Based on your answers, it pays to build the foundation properly in one go.",
     readiness: "Makes sure the certification audit goes through without surprises.",
     internalAuditReady: "Your practices are already well advanced, so the next step is to check them the way an auditor would.",
+    internalAuditRequired: "ISO 27001 requires an internal audit before certification.",
     continuous: "Keeps the system useful after certification too.",
+  },  goal: {
+    label: "Goal",
+    title: "ISO 27001 certificate",
+    text: "An accredited certification body carries out the certification audit in two stages. We help you prepare and keep supporting you after certification.",
   },
+
   findUs: "Find us",
   continueTests: "Continue tests",
   backToMenu: "Back to menu",
