@@ -156,7 +156,7 @@ h3.section { margin: 18px 0 0; font-size: 13px; text-transform: uppercase; lette
 @media (max-width: 380px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 25px; } }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
-/* Brändin viivaikonit maskina, jotta väri tulee tokeneista */
+/* Brändin täytetyt ikonit maskina, jotta väri tulee tokeneista */
 .ico { display: block; width: 40px; height: 40px; background: var(--cobalt);
   -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat; margin-bottom: 6px; }
 

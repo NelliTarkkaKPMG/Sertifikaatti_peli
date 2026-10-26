@@ -34,7 +34,7 @@ Finnish content is in **`content-fi.js`**, English in **`content-en.js`**. Both 
 - `GAMES`: quiz questions
 
 ## Branding
-Follows the KPMG visual package: KPMG blue / Cobalt primary colours, Purple–Cobalt linear gradient, traffic-light colours for right/wrong, Arial body text (headings use KPMG Bold when installed, else Arial). The logo (`assets/logo-*.svg`) and line icons (`assets/icons/`) come from the Visuals and Iconography decks; icons are coloured with CSS masks.
+Follows the KPMG visual package: KPMG blue / Cobalt primary colours, Purple–Cobalt linear gradient, traffic-light colours for right/wrong, Arial body text (headings use KPMG Bold when installed, else Arial). The logo (`assets/logo-*.svg`) and filled icons (`assets/icons/`) come from the Visuals and Iconography decks; icons are coloured with CSS masks.
 
 ## Deploying to Render
 The game is a static site (no build, no server, no database), so any number of devices can play at the same time: each runs its own copy in the browser.

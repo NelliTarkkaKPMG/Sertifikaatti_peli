@@ -54,8 +54,8 @@
   const anyDone = () => state.survey || Object.keys(state.results).length > 0;
   const byId = (id) => document.getElementById(id);
   const onClick = (id, fn) => { const el = byId(id); if (el) el.onclick = fn; };
-  // Brändin viivaikonit (assets/icons/<nimi>.png), väritetään CSS-maskilla
-  const icon = (name) => `<span class="ico" aria-hidden="true" style="--icon:url('assets/icons/${name}.png')"></span>`;
+  // Brändin täytetyt ikonit (assets/icons/<nimi>.png), väritetään CSS-maskilla. Nosta ?v, jos ikonit vaihtuvat.
+  const icon = (name) => `<span class="ico" aria-hidden="true" style="--icon:url('assets/icons/${name}.png?v=2')"></span>`;
 
   // screen: näkymän piirtofunktio, jos näkymässä saa vaihtaa kieltä (ei kesken kysymysten)
   function render(html, { showHome = false, screen = null } = {}) {
