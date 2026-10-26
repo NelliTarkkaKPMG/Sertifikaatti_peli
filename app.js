@@ -54,7 +54,6 @@
   const anyDone = () => state.survey || Object.keys(state.results).length > 0;
   const byId = (id) => document.getElementById(id);
   const onClick = (id, fn) => { const el = byId(id); if (el) el.onclick = fn; };
-  const uniq = (a) => a.filter((x, i) => a.indexOf(x) === i);
   // Brändin viivaikonit (assets/icons/<nimi>.png), väritetään CSS-maskilla
   const icon = (name) => `<span class="ico" aria-hidden="true" style="--icon:url('assets/icons/${name}.png')"></span>`;
 
@@ -486,20 +485,21 @@
     onClick("newPlayer", newPlayer);
   }
 
-  // Etenemispolku: lähtötilanteen mukainen runko + vastausten perusteella nousseet palvelut
+  // Etenemispolku, aina kolme vaihetta:
+  // 1. gap-analyysi, 2. vastausten perusteella tärkein palvelu, 3. sertifiointivalmiuden arviointi.
+  // Toisen vaiheen järjestys: nykytilan puutteet, tarvekartoituksen syyt, visojen aiheet.
   function recommendedPath(topics) {
     const check = checklistGame() && state.results[checklistGame().id];
     const ready = (state.survey && state.survey.reasons.includes("ready")) || (check && readinessPct(check) >= 75);
     const extra = [];
-    if (check) checklistGaps(check).slice(0, 3).forEach((q) => extra.push(q.service));
-    if (state.survey) state.survey.reasons.slice(0, 3).forEach((k) => extra.push(REASONS[k].service));
+    if (check) checklistGaps(check).forEach((q) => extra.push(q.service));
+    if (state.survey) state.survey.reasons.forEach((k) => extra.push(REASONS[k].service));
     weakTopics(topics, 3).forEach((k) => extra.push(TOPICS[k].service));
-    const start = ready ? ["gap"] : ["gap", "implementation"];
-    const middle = uniq(["risk"].concat(extra)).filter((k) => !start.includes(k) && !["readiness", "internal_audit", "continuous"].includes(k));
-    const end = ["internal_audit", "readiness"];
-    if (extra.includes("continuous")) end.push("continuous");
-    return uniq(start.concat(middle.slice(0, 2), end)).slice(0, 6);
+    const middle = extra.find((k) => !["gap", "readiness", "continuous"].includes(k))
+      || (ready ? "internal_audit" : "implementation");
+    return ["gap", middle, "readiness"];
   }
+
 
   // --- Aiheet vastausten perusteella -----------------------------------------
   function mergeTopics() {

@@ -16,7 +16,7 @@ The menu has two sections: **Yrityksenne** (about the organisation: needs assess
 
 After each quiz, topics they got wrong are shown with a business explanation and the matching service ("Palvelumme: …").
 
-The **summary** shows business need, knowledge level, business benefits, a **numbered recommended path of our services** (e.g. Gap-analyysi → ISMS:n käyttöönotto → Riskienarviointi ja SoA → Sisäinen auditointi → Sertifiointivalmiuden arviointi), and a box asking them to show the screen to a consultant at the stand.
+The **summary** shows business need, knowledge level, business benefits, a **three-step recommended path of our services** (always Gap-analyysi first and Sertifiointivalmiuden arviointi last; the middle step is the service that best matches their answers), and a box asking them to show the screen to a consultant at the stand.
 
 Nothing is stored or sent anywhere; answers stay in the visitor's browser.
 

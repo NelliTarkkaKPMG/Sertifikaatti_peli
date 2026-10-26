@@ -262,7 +262,7 @@ const REASONS = {
     service: "gap",
   },
   growth: {
-    title: "Kasvun mahdollistaja",
+    title: "Tukea kasvulle",
     text: "Kansainvälisesti tunnettu sertifikaatti helpottaa pääsyä suurempiin asiakkuuksiin ja uusille markkinoille.",
     service: "gap",
   },
