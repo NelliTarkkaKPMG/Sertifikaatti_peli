@@ -31,15 +31,15 @@ const UI = {
   benefits: "Business benefits",
   benefitsYou: "Business benefits for you",
   timeUp: "Time's up. Here is the right answer",
-  correct: "Correct!",
-  wrong: "Good try! The right answer is marked in green.",
+  correct: "Correct",
+  wrong: "Good try. The right answer is shown in green.",
   showResult: "Show result",
   next: "Next",
   nextSection: "Next section:",
   knowledgeLevels: [
-    { min: 0.85, title: "Top expert!", text: "Excellent, you know the standard inside out! With knowledge like this, ISO 27001 work is in strong hands." },
-    { min: 0.5, title: "Great work!", text: "You know the standard well! Along the way you picked up a few useful details that come in handy in practice too." },
-    { min: 0, title: "Great start!", text: "Great that you took part! Now you know a little more about ISO 27001! Our experts are happy to tell you more." },
+    { min: 0.85, title: "Excellent result", text: "You know the standard well. Knowledge like this is a real asset when a company prepares for certification." },
+    { min: 0.5, title: "Good result", text: "You have the basics covered, and the explanations may have shown you a detail or two. They are useful in practice too." },
+    { min: 0, title: "Good start", text: "Thanks for taking part. Some of the questions were tricky, and the explanations show the right answers. Our experts are happy to tell you more." },
   ],
   needLabel: "Business need",
   knowledgeLabel: "Your ISO 27001 knowledge",
@@ -54,11 +54,11 @@ const UI = {
   ourService: "Our service",
   strongTitle: "You know your stuff",
   strongText: "You know what the standard requires. The next question is how close your organisation is to certification. A readiness assessment will tell.",
-  newPlayer: "Done, new player",
+  newPlayer: "New player",
   readinessOf: (p) => `Readiness ${p}%`,
   readinessLabel: "Current state",
   gapsTitle: "Next steps",
-  inPlaceTitle: "Already in place, well done!",
+  inPlaceTitle: "Already in place",
 };
 
 const CONFIG = {
@@ -290,7 +290,7 @@ const TOPICS = {
   },
   risk: {
     title: "Risk management and SoA",
-    pitch: "ISO 27001 does not require everything, only the right things based on your risks. That is why it also suits smaller organisations.",
+    pitch: "ISO 27001 does not require everything, only what matters for your risks. That is why it also suits small companies.",
     service: "risk",
   },
   controls: {
@@ -447,9 +447,9 @@ const GAMES = [
     ],
     // Result levels by readiness (0–1)
     levels: [
-      { min: 0.75, title: "Strong foundation", text: "Great, many key practices are already in place! Certification may be closer than you think, and a readiness assessment shows the final steps." },
-      { min: 0.4, title: "Well on your way", text: "Good work: much of the foundation already exists! A gap analysis helps prioritise the next steps and shows a realistic timeline." },
-      { min: 0, title: "The journey begins", text: "You have a clear path ahead, and progress from this stage is often the fastest and most rewarding. We help you build the foundation in a controlled way." },
+      { min: 0.75, title: "Strong foundation", text: "Many key practices are already in place, so certification may be closer than you think. A readiness assessment shows what is still needed." },
+      { min: 0.4, title: "Well on your way", text: "Much of the foundation already exists. A gap analysis helps you decide what to do next and gives a realistic timeline." },
+      { min: 0, title: "A good time to start", text: "Progress from this stage is often quick, because every step shows right away. We help you build the foundation in the right order." },
     ],
     // "short" is shown in the Already in place list, "why" and "service" in the areas to develop
     questions: [
