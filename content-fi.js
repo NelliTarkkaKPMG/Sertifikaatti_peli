@@ -53,6 +53,7 @@ const UI = {
   ourService: "Palvelumme",
   strongTitle: "Osaaminen on vahvaa",
   strongText: "Sertifikaatti tekee osaamisestanne todennettavaa asiakkaille. Valmiusarviointi osoittaa, kuinka lähellä sertifiointia olette.",
+  newPlayer: "Valmis – uusi pelaaja",
   readinessOf: (p) => `Valmiusaste ${p} %`,
   readinessLabel: "Nykytila",
   gapsTitle: "Kehityskohteet",

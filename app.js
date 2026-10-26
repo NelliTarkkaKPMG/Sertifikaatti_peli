@@ -14,6 +14,11 @@
     if (currentScreen) currentScreen();
   });
 
+  // Tablettitila (osoitteen perään ?kiosk): messuosaston jaetuille laitteille.
+  // Näyttää "Uusi pelaaja" -napin ja palaa kielivalintaan, kun laitetta ei ole käytetty hetkeen.
+  const KIOSK = new URLSearchParams(location.search).has("kiosk");
+  const KIOSK_IDLE_MS = 3 * 60 * 1000;
+
   const fresh = (lang = null) => ({ lang, company: "", results: {}, survey: null });
   let state = load();
   let timerId = null;
@@ -60,6 +65,23 @@
   }
 
   // --- Kielivalinta ----------------------------------------------------------
+  function newPlayer() {
+    stopTimer();
+    state = fresh();
+    save();
+    showLanguage();
+  }
+
+  if (KIOSK) {
+    let idleId = null;
+    const resetIdle = () => {
+      clearTimeout(idleId);
+      idleId = setTimeout(() => { if (state.lang || anyDone()) newPlayer(); }, KIOSK_IDLE_MS);
+    };
+    ["pointerdown", "keydown", "scroll"].forEach((ev) => window.addEventListener(ev, resetIdle, { passive: true }));
+    resetIdle();
+  }
+
   function showLanguage() {
     render(`
       <p class="eyebrow">ISO/IEC 27001:2022</p>
@@ -120,7 +142,7 @@
     onClick("surveyCard", () => showSurveyQuestion([], 0));
     app.querySelectorAll(".tile[data-id]").forEach((el) => el.onclick = () => startGame(GAMES.find((g) => g.id === el.dataset.id)));
     onClick("final", showFinal);
-    onClick("reset", () => { state = fresh(state.lang); save(); showStart(); });
+    onClick("reset", () => { if (KIOSK) newPlayer(); else { state = fresh(state.lang); save(); showStart(); } });
   }
 
   // --- Tarvekartoitus --------------------------------------------------------
@@ -406,9 +428,11 @@
         <p class="note">${esc(UI.findUs)} ${esc(CONFIG.stand)}.</p>
       </div>
       <button class="btn ghost" id="hub">${esc(GAMES.some((g) => !state.results[g.id]) ? UI.continueTests : UI.backToMenu)}</button>
+      ${KIOSK ? `<button class="btn" id="newPlayer">${esc(UI.newPlayer)}</button>` : ""}
     `, { showHome: true, screen: showFinal });
     onClick("survey", () => showSurveyQuestion([], 0));
     onClick("hub", showHub);
+    onClick("newPlayer", newPlayer);
   }
 
   // Etenemispolku: lähtötilanteen mukainen runko + vastausten perusteella nousseet palvelut

@@ -53,6 +53,7 @@ const UI = {
   ourService: "Our service",
   strongTitle: "Your knowledge is strong",
   strongText: "Certification makes your expertise verifiable to customers. A readiness assessment shows how close to certification you already are.",
+  newPlayer: "Done – new player",
   readinessOf: (p) => `Readiness ${p}%`,
   readinessLabel: "Current state",
   gapsTitle: "Areas to develop",

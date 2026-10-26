@@ -1,0 +1,11 @@
+# Render Blueprint: staattinen sivusto, ei build-vaihetta.
+services:
+  - type: web
+    name: iso27001-valmiustesti
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: ./
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache

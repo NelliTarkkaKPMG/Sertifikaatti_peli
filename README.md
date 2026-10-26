@@ -33,9 +33,22 @@ Finnish content is in **`content-fi.js`**, English in **`content-en.js`**. Both 
 ## Branding
 Follows the KPMG visual package: KPMG blue / Cobalt primary colours, Purple–Cobalt linear gradient, traffic-light colours for right/wrong, Arial body text (headings use KPMG Bold when installed, else Arial). The logo (`assets/logo-*.svg`) and line icons (`assets/icons/`) come from the Visuals and Iconography decks; icons are coloured with CSS masks.
 
-## Publishing (GitHub Pages)
-1. Repo → Settings → Pages → *Deploy from a branch* → choose the branch and `/ (root)`.
-2. Open `https://<user>.github.io/<repo>/qr.html` – it shows a printable QR code pointing to the game.
+## Deploying to Render
+The game is a static site (no build, no server, no database), so any number of devices can play at the same time – each runs its own copy in the browser.
+
+1. In Render: **New → Static Site** and connect this GitHub repository.
+2. Branch: the branch with this code (e.g. `main` after merging).
+3. Build command: *(leave empty)*. Publish directory: `.`
+4. Create. The game is live at `https://<name>.onrender.com/`.
+
+Alternatively use **New → Blueprint**, which reads `render.yaml` from the repo.
+
+## Addresses
+| Address | Use |
+|---|---|
+| `https://<name>.onrender.com/` | Visitors' own phones (behind the QR code) |
+| `https://<name>.onrender.com/?kiosk` | **Tablets at the stand.** Adds a "Valmis – uusi pelaaja / Done – new player" button to the summary, and resets to the language screen after 3 minutes without use, so the next visitor never sees the previous visitor's answers. |
+| `https://<name>.onrender.com/qr.html` | Printable QR poster pointing to the game |
 
 ## Run locally
 `python3 -m http.server` and open http://localhost:8000
