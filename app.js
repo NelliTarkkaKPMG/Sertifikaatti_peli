@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const STORE_KEY = "iso27001-game-v4";
+  const STORE_KEY = "iso27001-game-v5";
   const LANGS = { fi: "Suomi", en: "English" };
 
   const app = document.getElementById("app");
@@ -99,7 +99,7 @@
         <span class="tag">${esc(g.tag)}</span>
         <span class="tile-title">${esc(g.title)}</span>
         <span class="tile-sub">${esc(g.subtitle)}</span>
-        ${status(r, r ? UI.correctOf(r.correct, g.questions.length) : "")}
+        ${status(r, r ? (g.type === "checklist" ? UI.readinessOf(readinessPct(r)) : UI.correctOf(r.correct, g.questions.length)) : "")}
       </button>`;
     }).join("");
     render(`
@@ -191,6 +191,7 @@
 
   // --- Tietovisat ------------------------------------------------------------
   function startGame(game) {
+    if (game.type === "checklist") return showChecklistQuestion(game, {}, 0);
     const run = { game, order: shuffle(game.questions), i: 0, correct: 0, topics: {} };
     // Auditoijan näkökulma: johdantokysymys pidetään aina ensimmäisenä
     if (game.id === "auditor") run.order = [game.questions[0], ...shuffle(game.questions.slice(1))];
@@ -293,17 +294,92 @@
     onClick("final", showFinal);
   }
 
+  // --- Nykytilan tarkistuslista ("Onko teillä tehty...?") ---------------------
+  function showChecklistQuestion(game, answers, i) {
+    const q = game.questions[i];
+    render(`
+      <div class="panel">
+        <div class="progress"><span>${esc(game.title)}</span><span>${i + 1} / ${game.questions.length}</span></div>
+        <div class="bar"><div style="width:${(i / game.questions.length) * 100}%"></div></div>
+        <p class="prompt">${esc(q.ref)}</p>
+        <p class="question">${esc(q.q)}</p>
+        <div class="options two">
+          ${game.scale.map((o, idx) => `<button class="opt" data-idx="${idx}">${esc(o.label)}</button>`).join("")}
+        </div>
+      </div>
+    `, { showHome: true });
+    app.querySelectorAll(".opt").forEach((b) => b.onclick = () => {
+      answers[q.id] = game.scale[Number(b.dataset.idx)].points;
+      if (i + 1 < game.questions.length) showChecklistQuestion(game, answers, i + 1);
+      else {
+        state.results[game.id] = { type: "checklist", answers };
+        save();
+        showChecklistResult(game.id);
+      }
+    });
+  }
+
+  const checklistGame = () => GAMES.find((g) => g.type === "checklist");
+
+  function readinessPct(r) {
+    const vals = Object.values(r.answers);
+    return Math.round((vals.reduce((s, v) => s + v, 0) / (vals.length * 2)) * 100);
+  }
+
+  // Puuttuvat ensin, sitten osittaiset
+  function checklistGaps(r) {
+    return checklistGame().questions.filter((q) => r.answers[q.id] < 2)
+      .sort((a, b) => r.answers[a.id] - r.answers[b.id]);
+  }
+
+  function showChecklistResult(id) {
+    const game = GAMES.find((g) => g.id === id);
+    const r = state.results[id];
+    const pct = readinessPct(r);
+    const level = game.levels.find((l) => pct / 100 >= l.min);
+    const gaps = checklistGaps(r);
+    const inPlace = game.questions.filter((q) => r.answers[q.id] === 2);
+    const nextGame = GAMES.find((g) => !state.results[g.id]);
+    render(`
+      <div class="panel">
+        <p class="eyebrow">${esc(game.title)}</p>
+        <h1 class="result-title">${esc(level.title)}</h1>
+        <div class="meter" role="img" aria-label="${esc(UI.readinessOf(pct))}"><div style="width:${Math.max(4, pct)}%"></div></div>
+        <p class="stat-sub">${esc(UI.readinessOf(pct))}</p>
+        <p>${esc(level.text)}</p>
+      </div>
+      ${gaps.length ? `<section class="block"><h2>${esc(UI.gapsTitle)}</h2>
+        ${gaps.slice(0, 4).map((q) => `<div class="item"><h4>${esc(q.short)}</h4><p>${esc(q.why)}</p>
+          <p class="service"><span>${esc(UI.ourService)}</span> ${esc(SERVICES[q.service].name)}</p></div>`).join("")}
+      </section>` : ""}
+      ${inPlace.length ? `<div class="strengths"><strong>${esc(UI.inPlaceTitle)}</strong>
+        <ul>${inPlace.map((q) => `<li>${esc(q.short)}</li>`).join("")}</ul></div>` : ""}
+      ${!state.survey ? `<button class="btn" id="survey">${esc(SURVEY.title)}</button>` : ""}
+      <button class="btn ${state.survey ? "" : "ghost"}" id="final">${esc(UI.showSummary)}</button>
+      ${nextGame ? `<button class="btn ghost" id="next">${esc(UI.nextSection)} ${esc(nextGame.title)}</button>` : ""}
+    `, { showHome: true, screen: () => showChecklistResult(id) });
+    onClick("survey", () => showSurveyQuestion([], 0));
+    onClick("next", () => startGame(nextGame));
+    onClick("final", showFinal);
+  }
+
   function knowledgeLevel(pct) {
     return UI.knowledgeLevels.find((l) => pct >= l.min);
   }
 
   // --- Yhteenveto ------------------------------------------------------------
   function showFinal() {
-    const results = Object.values(state.results);
+    const results = Object.values(state.results).filter((r) => r.type !== "checklist");
+    const check = checklistGame() && state.results[checklistGame().id];
     const topics = mergeTopics();
     const summary = [];
     if (state.survey) {
       summary.push(`<div class="stat"><span class="stat-label">${esc(UI.needLabel)}</span><strong>${esc(surveyLevel().title)}</strong></div>`);
+    }
+    if (check) {
+      const pct = readinessPct(check);
+      const level = checklistGame().levels.find((l) => pct / 100 >= l.min);
+      summary.push(`<div class="stat"><span class="stat-label">${esc(UI.readinessLabel)}</span><strong>${esc(level.title)}</strong><span class="stat-sub">${esc(UI.readinessOf(pct))}</span></div>`);
     }
     if (results.length) {
       const correct = results.reduce((s, r) => s + r.correct, 0);
@@ -337,8 +413,10 @@
 
   // Etenemispolku: lähtötilanteen mukainen runko + vastausten perusteella nousseet palvelut
   function recommendedPath(topics) {
-    const ready = state.survey && state.survey.reasons.includes("ready");
+    const check = checklistGame() && state.results[checklistGame().id];
+    const ready = (state.survey && state.survey.reasons.includes("ready")) || (check && readinessPct(check) >= 75);
     const extra = [];
+    if (check) checklistGaps(check).slice(0, 3).forEach((q) => extra.push(q.service));
     if (state.survey) state.survey.reasons.slice(0, 3).forEach((k) => extra.push(REASONS[k].service));
     weakTopics(topics, 3).forEach((k) => extra.push(TOPICS[k].service));
     const start = ready ? ["gap"] : ["gap", "implementation"];

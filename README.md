@@ -9,7 +9,7 @@ Visitors scan a QR code, choose **Finnish or English**, and get:
 | **Tarvekartoitus** (needs assessment) | 7 questions about their company: customer demands, confidential data, NIS2, suppliers, incidents, growth plans, current practices. Result: business-need level and the business benefits that apply to them. |
 | ISO 27001:n perusteet | Basics: SoA, Annex A, themes, certification |
 | Auditoijan näkökulma | Auditor findings: which clause does it relate to (incl. 9.2) |
-| Liite A:n teemat | Sort Annex A controls into the four themes |
+| Mitä organisaatiossanne on jo tehty? | 10 "Onko teillä…?" questions about practices already in place (policy, risks, assets, access, MFA, backups, incidents, suppliers, training, audit). Answer Yes / Partly / No / Don't know. Result: readiness %, areas to develop with the matching service, and what is already in place. Gaps feed into the recommended path. |
 | Pitääkö paikkansa? | Timed true/false on common beliefs |
 
 After each quiz, topics they got wrong are shown with a business explanation and the matching service ("Palvelumme: …").

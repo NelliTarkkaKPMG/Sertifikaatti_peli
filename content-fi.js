@@ -53,6 +53,10 @@ const UI = {
   ourService: "Palvelumme",
   strongTitle: "Osaaminen on vahvaa",
   strongText: "Sertifikaatti tekee osaamisestanne todennettavaa asiakkaille. Valmiusarviointi osoittaa, kuinka lähellä sertifiointia olette.",
+  readinessOf: (p) => `Valmiusaste ${p} %`,
+  readinessLabel: "Nykytila",
+  gapsTitle: "Kehityskohteet",
+  inPlaceTitle: "Jo kunnossa",
 };
 
 const CONFIG = {
@@ -379,24 +383,36 @@ const GAMES = [
     ],
   },
   {
-    id: "sort",
-    tag: "Liite A · 10 kontrollia",
-    title: "Liite A:n teemat",
-    subtitle: "Mihin neljästä teemasta kontrolli kuuluu?",
-    topic: "controls", // oletusaihe kaikille tämän pelin kysymyksille
-    fixedOptions: ["Organisatoriset (5)", "Ihmisiin liittyvät (6)", "Fyysiset (7)", "Teknologiset (8)"],
-    prompt: "Mihin teemaan kontrolli kuuluu?",
+    id: "maturity",
+    type: "checklist", // ei oikeita vastauksia – mittaa, mitä organisaatiossa on jo tehty
+    tag: "Nykytila · 10 kysymystä",
+    title: "Mitä organisaatiossanne on jo tehty?",
+    subtitle: "Arvio nykytilasta – ei oikeita tai vääriä vastauksia.",
+    // Vastausasteikko: points 2 = kunnossa, 1 = osittain, 0 = puuttuu
+    scale: [
+      { label: "Kyllä", points: 2 },
+      { label: "Osittain", points: 1 },
+      { label: "Ei", points: 0 },
+      { label: "En tiedä", points: 0 },
+    ],
+    // Tulostasot valmiusasteen mukaan (0–1)
+    levels: [
+      { min: 0.75, title: "Vakiintunut", text: "Monet keskeiset käytännöt ovat jo käytössä. Sertifiointi voi olla lähempänä kuin arvaattekaan – valmiusarviointi kertoo, mitä vielä puuttuu." },
+      { min: 0.4, title: "Kehittyvä", text: "Hyvä alku: osa käytännöistä on kunnossa, osa puuttuu. Gap-analyysi priorisoi loput ja näyttää realistisen aikataulun." },
+      { min: 0, title: "Alkuvaihe", text: "Monet perusasiat ovat vielä tekemättä. Jäsennelty käyttöönotto etenee hallitusti, ja pääsette nopeasti vauhtiin." },
+    ],
+    // "short" näytetään Jo kunnossa -listassa, "why" ja "service" kehityskohteissa
     questions: [
-      { q: "Uhkatiedustelu", correct: 0, explain: "5.7 Uhkatiedustelu on yksi vuoden 2022 version uusista kontrolleista." },
-      { q: "Etätyö", correct: 1, explain: "6.7 Etätyö kuuluu ihmisiin liittyviin kontrolleihin." },
-      { q: "Puhdas pöytä ja tyhjä näyttö", correct: 2, explain: "7.7 Puhdas pöytä ja tyhjä näyttö on fyysinen kontrolli." },
-      { q: "Turvallinen ohjelmointi", correct: 3, explain: "8.28 Turvallinen ohjelmointi on uusi teknologinen kontrolli." },
-      { q: "Taustatarkistukset", correct: 1, explain: "6.1 Taustatarkistukset tehdään ennen palvelussuhteen alkua." },
-      { q: "Pilvipalvelujen käytön tietoturva", correct: 0, explain: "5.23 on uusi organisatorinen kontrolli." },
-      { q: "Fyysisen turvallisuuden valvonta", correct: 2, explain: "7.4 Fyysisen turvallisuuden valvonta lisättiin vuoden 2022 versioon." },
-      { q: "Tietovuotojen estäminen", correct: 3, explain: "8.12 Tietovuotojen estäminen (DLP) on uusi teknologinen kontrolli." },
-      { q: "Salassapitosopimukset", correct: 1, explain: "6.6 Salassapito- tai vaitiolosopimukset." },
-      { q: "Tallennusvälineet", correct: 2, explain: "7.10 Tallennusvälineet on fyysinen kontrolli." },
+      { id: "policy", ref: "5.2 · A.5.1", q: "Onko teillä johdon hyväksymä tietoturvapolitiikka, joka on viestitty koko henkilöstölle?", short: "Tietoturvapolitiikka", why: "Politiikka on hallintajärjestelmän perusta ja osoittaa johdon sitoutumisen – auditoija aloittaa usein siitä.", service: "implementation" },
+      { id: "risk", ref: "6.1.2 · 8.2", q: "Onko teillä arvioitu ja dokumentoitu tietoturvariskit viimeisen vuoden aikana?", short: "Riskienarviointi", why: "Ilman ajantasaista riskiarviota suojaukset valitaan arvaamalla. Riskiarvio ohjaa koko standardin toteutusta.", service: "risk" },
+      { id: "assets", ref: "A.5.9", q: "Onko teillä ajantasainen luettelo järjestelmistä, laitteista ja tiedoista sekä niiden omistajista?", short: "Tieto-omaisuuden luettelo", why: "Sitä ei voi suojata, mitä ei tunne. Omaisuusluettelo on riskienarvioinnin lähtökohta.", service: "gap" },
+      { id: "access", ref: "A.5.15 · A.5.18", q: "Onko teillä käyttöoikeudet myönnetty tarpeen mukaan ja katselmoitu säännöllisesti?", short: "Käyttöoikeuksien hallinta", why: "Vanhentuneet ja liian laajat käyttöoikeudet ovat yksi yleisimmistä auditointihavainnoista ja tietomurtojen reiteistä.", service: "gap" },
+      { id: "mfa", ref: "A.8.5", q: "Onko teillä monivaiheinen tunnistautuminen käytössä kaikissa kriittisissä järjestelmissä?", short: "Monivaiheinen tunnistautuminen", why: "Monivaiheinen tunnistautuminen estää valtaosan tunnusten kalasteluun perustuvista hyökkäyksistä.", service: "gap" },
+      { id: "backup", ref: "A.8.13", q: "Onko teillä testattu varmuuskopioiden palauttaminen käytännössä?", short: "Testatut varmuuskopiot", why: "Varmuuskopio on arvokas vain, jos sen palauttaminen toimii. Testaamaton varmuuskopio on riski kiristyshaittaohjelmatilanteessa.", service: "gap" },
+      { id: "incident", ref: "A.5.24–A.5.26", q: "Onko teillä sovittu prosessi ja vastuuhenkilöt tietoturvapoikkeamien käsittelyyn?", short: "Poikkeamien käsittely", why: "NIS2 edellyttää merkittävistä poikkeamista ilmoittamista tiukoissa määräajoissa – se onnistuu vain sovitulla prosessilla.", service: "nis2" },
+      { id: "suppliers", ref: "A.5.19–A.5.20", q: "Onko teillä asetettu toimittajille ja pilvipalveluille tietoturvavaatimukset sopimuksissa?", short: "Toimittajavaatimukset", why: "Merkittävä osa tietoturvapoikkeamista tulee toimitusketjun kautta. Vaatimukset sopimuksissa ovat ensimmäinen suojakeino.", service: "risk" },
+      { id: "training", ref: "7.2–7.3 · A.6.3", q: "Onko teillä henkilöstölle säännöllistä tietoturvakoulutusta, ja kirjataanko osallistuminen?", short: "Henkilöstön koulutus", why: "Inhimillinen virhe on yleinen poikkeaman alku. Standardi edellyttää myös näyttöä koulutuksesta.", service: "training" },
+      { id: "audit", ref: "9.2", q: "Onko teillä auditoitu tietoturvaa sisäisesti tai ulkoisesti viimeisen vuoden aikana?", short: "Tietoturva-auditointi", why: "Säännöllinen auditointi löytää puutteet ennen asiakasta tai hyökkääjää – ja on pakollinen osa ISO 27001:tä.", service: "internal_audit" },
     ],
   },
   {

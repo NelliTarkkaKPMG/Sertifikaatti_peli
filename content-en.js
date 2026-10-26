@@ -53,6 +53,10 @@ const UI = {
   ourService: "Our service",
   strongTitle: "Your knowledge is strong",
   strongText: "Certification makes your expertise verifiable to customers. A readiness assessment shows how close to certification you already are.",
+  readinessOf: (p) => `Readiness ${p}%`,
+  readinessLabel: "Current state",
+  gapsTitle: "Areas to develop",
+  inPlaceTitle: "Already in place",
 };
 
 const CONFIG = {
@@ -378,24 +382,36 @@ const GAMES = [
     ],
   },
   {
-    id: "sort",
-    tag: "Annex A · 10 controls",
-    title: "Annex A themes",
-    subtitle: "Which of the four themes does the control belong to?",
-    topic: "controls", // default topic for every question in this game
-    fixedOptions: ["Organisational (5)", "People (6)", "Physical (7)", "Technological (8)"],
-    prompt: "Which theme does the control belong to?",
+    id: "maturity",
+    type: "checklist", // no right answers – measures what the organisation has already done
+    tag: "Current state · 10 questions",
+    title: "What has your organisation already done?",
+    subtitle: "An estimate of your current state – no right or wrong answers.",
+    // Answer scale: points 2 = in place, 1 = partly, 0 = missing
+    scale: [
+      { label: "Yes", points: 2 },
+      { label: "Partly", points: 1 },
+      { label: "No", points: 0 },
+      { label: "Don't know", points: 0 },
+    ],
+    // Result levels by readiness (0–1)
+    levels: [
+      { min: 0.75, title: "Established", text: "Many key practices are already in place. Certification may be closer than you think – a readiness assessment shows what is still missing." },
+      { min: 0.4, title: "Developing", text: "A good start: some practices are in place, some are missing. A gap analysis prioritises the rest and shows a realistic timeline." },
+      { min: 0, title: "Early stage", text: "Many of the basics are still to be done. A structured implementation moves forward in a controlled way and gets you up to speed quickly." },
+    ],
+    // "short" is shown in the Already in place list, "why" and "service" in the areas to develop
     questions: [
-      { q: "Threat intelligence", correct: 0, explain: "5.7 Threat intelligence is one of the new controls in the 2022 version." },
-      { q: "Remote working", correct: 1, explain: "6.7 Remote working is a people control." },
-      { q: "Clear desk and clear screen", correct: 2, explain: "7.7 Clear desk and clear screen is a physical control." },
-      { q: "Secure coding", correct: 3, explain: "8.28 Secure coding is a new technological control." },
-      { q: "Screening", correct: 1, explain: "6.1 Screening is carried out before employment begins." },
-      { q: "Information security for use of cloud services", correct: 0, explain: "5.23 is a new organisational control." },
-      { q: "Physical security monitoring", correct: 2, explain: "7.4 Physical security monitoring was added in the 2022 version." },
-      { q: "Data leakage prevention", correct: 3, explain: "8.12 Data leakage prevention (DLP) is a new technological control." },
-      { q: "Confidentiality or non-disclosure agreements", correct: 1, explain: "6.6 Confidentiality or non-disclosure agreements." },
-      { q: "Storage media", correct: 2, explain: "7.10 Storage media is a physical control." },
+      { id: "policy", ref: "5.2 · A.5.1", q: "Do you have an information security policy approved by management and communicated to all staff?", short: "Information security policy", why: "The policy is the foundation of the management system and shows management commitment – auditors often start there.", service: "implementation" },
+      { id: "risk", ref: "6.1.2 · 8.2", q: "Have you assessed and documented your information security risks within the last year?", short: "Risk assessment", why: "Without a current risk assessment, safeguards are chosen by guesswork. The risk assessment drives the whole implementation of the standard.", service: "risk" },
+      { id: "assets", ref: "A.5.9", q: "Do you have an up-to-date inventory of systems, devices and information, with named owners?", short: "Asset inventory", why: "You cannot protect what you do not know you have. The asset inventory is the starting point for risk assessment.", service: "gap" },
+      { id: "access", ref: "A.5.15 · A.5.18", q: "Do you grant access rights on a need basis and review them regularly?", short: "Access management", why: "Outdated and excessive access rights are among the most common audit findings and routes to data breaches.", service: "gap" },
+      { id: "mfa", ref: "A.8.5", q: "Do you use multi-factor authentication in all critical systems?", short: "Multi-factor authentication", why: "Multi-factor authentication stops most attacks based on phished credentials.", service: "gap" },
+      { id: "backup", ref: "A.8.13", q: "Have you tested restoring your backups in practice?", short: "Tested backups", why: "A backup is only worth something if restoring it works. An untested backup is a risk in a ransomware situation.", service: "gap" },
+      { id: "incident", ref: "A.5.24–A.5.26", q: "Do you have an agreed process and named owners for handling security incidents?", short: "Incident handling", why: "NIS2 requires significant incidents to be reported within tight deadlines – which only works with an agreed process.", service: "nis2" },
+      { id: "suppliers", ref: "A.5.19–A.5.20", q: "Have you set information security requirements for suppliers and cloud services in contracts?", short: "Supplier requirements", why: "A significant share of security incidents come through the supply chain. Contractual requirements are the first line of defence.", service: "risk" },
+      { id: "training", ref: "7.2–7.3 · A.6.3", q: "Do your staff receive regular information security training, and is participation recorded?", short: "Staff training", why: "Human error is a common starting point for incidents. The standard also requires evidence of training.", service: "training" },
+      { id: "audit", ref: "9.2", q: "Have you audited your information security internally or externally within the last year?", short: "Security audit", why: "Regular auditing finds the gaps before a customer or an attacker does – and it is a mandatory part of ISO 27001.", service: "internal_audit" },
     ],
   },
   {
