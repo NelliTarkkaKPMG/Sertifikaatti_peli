@@ -213,7 +213,6 @@
     state.survey = { score, reasons };
     save();
     showSurveyResult();
-    fireworks();
   }
 
   function showSurveyResult() {
@@ -334,7 +333,6 @@
     state.results[game.id] = { correct: run.correct, total: game.questions.length, topics: run.topics };
     save();
     showGameResult(game.id, run.topics);
-    fireworks();
   }
 
   // Pelin tulos; piirretään tallennetusta tilasta, jotta kielen vaihto toimii
@@ -380,7 +378,6 @@
         state.results[game.id] = { type: "checklist", answers };
         save();
         showChecklistResult(game.id);
-        fireworks();
       }
     });
   }
@@ -562,81 +559,6 @@
       : `<div class="item"><h4>${esc(UI.strongTitle)}</h4><p>${esc(UI.strongText)}</p>
           <p class="service"><span>${esc(UI.ourService)}</span> ${esc(SERVICES.readiness.name)}</p></div>`;
     return `<section class="block"><h2>${esc(UI.whatItMeans)}</h2>${items}</section>`;
-  }
-
-  // --- Ilotulitus kyselyn päätteeksi ------------------------------------------
-  // Kevyt canvas-animaatio brändiväreillä. Ei estä napautuksia, ja se ohitetaan,
-  // jos laitteessa on valittu vähennetty liike.
-  function fireworks(duration = 4000) {
-    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const old = byId("fireworks"); if (old) old.remove();
-    const canvas = document.createElement("canvas");
-    canvas.id = "fireworks";
-    document.body.appendChild(canvas);
-    const ctx = canvas.getContext("2d");
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    let W, H;
-    const resize = () => {
-      W = window.innerWidth; H = window.innerHeight;
-      canvas.width = W * dpr; canvas.height = H * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const css = getComputedStyle(document.documentElement);
-    const colors = ["--kpmg-blue", "--cobalt", "--pacific", "--purple"]
-      .map((v) => css.getPropertyValue(v).trim()).filter(Boolean).concat(["#FD349C"]);
-    const pick = (a) => a[Math.floor(Math.random() * a.length)];
-    const rockets = [], sparks = [];
-    const start = performance.now();
-    let nextLaunch = 0;
-
-    const launch = () => {
-      const x = W * (0.15 + Math.random() * 0.7);
-      rockets.push({ x, y: H, vx: (Math.random() - 0.5) * 1.5, vy: -(H * 0.012 + Math.random() * H * 0.004),
-        targetY: H * (0.15 + Math.random() * 0.3), color: pick(colors) });
-    };
-    const explode = (r) => {
-      const n = 90 + Math.floor(Math.random() * 40);
-      const speed = 4 + Math.random() * 2.5;
-      const second = pick(colors);
-      for (let i = 0; i < n; i++) {
-        const a = (Math.PI * 2 * i) / n + Math.random() * 0.1;
-        const v = speed * (0.6 + Math.random() * 0.5);
-        sparks.push({ x: r.x, y: r.y, px: r.x, py: r.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1,
-          decay: 0.011 + Math.random() * 0.008, size: 2.5 + Math.random() * 1.5, color: i % 3 ? r.color : second });
-      }
-    };
-
-    const frame = (t) => {
-      const elapsed = t - start;
-      ctx.clearRect(0, 0, W, H);
-      if (elapsed < duration - 1200 && elapsed > nextLaunch) {
-        launch(); if (Math.random() < 0.4) launch();
-        nextLaunch = elapsed + 280 + Math.random() * 320;
-      }
-      for (let i = rockets.length - 1; i >= 0; i--) {
-        const r = rockets[i];
-        r.x += r.vx; r.y += r.vy; r.vy += 0.05;
-        ctx.fillStyle = r.color;
-        ctx.beginPath(); ctx.arc(r.x, r.y, 3.5, 0, Math.PI * 2); ctx.fill();
-        if (r.y <= r.targetY || r.vy >= 0) { explode(r); rockets.splice(i, 1); }
-      }
-      for (let i = sparks.length - 1; i >= 0; i--) {
-        const p = sparks[i];
-        p.px = p.x; p.py = p.y;
-        p.x += p.vx; p.y += p.vy; p.vx *= 0.975; p.vy = p.vy * 0.975 + 0.05; p.life -= p.decay;
-        if (p.life <= 0) { sparks.splice(i, 1); continue; }
-        ctx.globalAlpha = Math.min(1, p.life * 1.4);
-        ctx.strokeStyle = p.color; ctx.lineWidth = p.size; ctx.lineCap = "round";
-        ctx.beginPath(); ctx.moveTo(p.px - p.vx * 2, p.py - p.vy * 2); ctx.lineTo(p.x, p.y); ctx.stroke();
-      }
-      ctx.globalAlpha = 1;
-      if (elapsed < duration || sparks.length || rockets.length) requestAnimationFrame(frame);
-      else { window.removeEventListener("resize", resize); canvas.remove(); }
-    };
-    requestAnimationFrame(frame);
   }
 
   if (!CONTENT[state.lang]) { state.lang = null; showLanguage(); }

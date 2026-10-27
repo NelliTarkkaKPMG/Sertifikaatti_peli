@@ -193,6 +193,3 @@ h3.section { margin: 18px 0 0; font-size: 13px; text-transform: uppercase; lette
 .path li.goal .ico { background: var(--purple); }
 .goal-label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; color: var(--purple); margin: 0 0 2px; }
 .path li.goal h4 { color: var(--kpmg-blue); font-size: 18px; }
-
-/* Ilotulitus kyselyn päätteeksi: koko ruudun päällä, ei estä napautuksia */
-#fireworks { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
